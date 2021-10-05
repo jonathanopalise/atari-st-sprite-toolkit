@@ -312,6 +312,15 @@ class WordSequence
     {
         return count($this->words) * 16;
     }
+
+    public function getWordAt($index)
+    {
+        if (!isset($this->words[$index])) {
+            throw new RuntimeException('Unable to fetch word at requested index');
+        }
+
+        return $this->words[$index];
+    }
 }
 
 
@@ -434,6 +443,32 @@ class SpriteLine
         return !is_null($this->maskWordSequence);
     }
 
+
+    public function getMaskWordAt($wordIndex)
+    {
+        if (!$this->isMasked()) {
+            throw new RuntimeException('Attempt to get mask word for non-masked sprite');
+        }
+
+        return $this->maskWordSequence->getWordAt($wordIndex);
+    }
+
+    public function getBitplaneWordAt($bitplaneIndex, $wordIndex)
+    {
+        if (!isset($this->bitplaneWordSequences[$bitplaneIndex])) {
+            throw new RuntimeException('Attempt to fetch non-existent bitplane');
+        }
+
+        $bitplaneWordSequence = $this->bitplaneWordSequences[$bitplaneIndex];
+
+        return $bitplaneWordSequence->getWordAt($wordIndex);
+    }
+
+    public function getWidthInWords()
+    {
+        return $this->width >> 4;
+    }
+
     public function getWidth()
     {
         return $this->width;
@@ -521,7 +556,6 @@ class SpriteBuilder
     }
 }
 
-
 class Sprite
 {
     private $masked;
@@ -568,6 +602,76 @@ class Sprite
     {
         return $this->spriteLines[0]->getWidth();
     }
+
+    public function exportToCompiledSprite()
+    {
+    }
+
+    public function exportToPlanarData()
+    {
+        $words = [];
+        $widthInWords = $this->spriteLines[0]->getWidthInWords();
+
+        foreach ($this->spriteLines as $spriteLine) {
+            for ($wordIndex = 0; $wordIndex < $widthInWords; $wordIndex++) {
+                if ($this->masked) {
+                    $words[] = $spriteLine->getMaskWordAt($wordIndex);
+                }
+                for ($bitplaneIndex = 0; $bitplaneIndex < 4; $bitplaneIndex++) {
+                    $words[] = $spriteLine->getBitplaneWordAt($bitplaneIndex, $wordIndex);
+                }
+            }
+        }
+
+        return new PlanarData(
+            $this->getWidth(),
+            count($this->spriteLines),
+            $this->masked,
+            $words
+        );
+    }
+}
+
+class PlanarData
+{
+    private $width;
+    private $height;
+    private $hasMask;
+    private $words;
+
+    public function __construct(int $width, int $height, bool $hasMask, array $words)
+    {
+        if ($width < 16) {
+            throw new RuntimeException('Width must be at least 16');
+        }
+
+        if (($width & 15) != 0) {
+            throw new RuntimeException('Width must be a multiple of 16');
+        }
+
+        $wordsPerSixteenPixelBlock = 4;
+        if ($hasMask) {
+            $wordsPerSixteenPixelBlock++;
+        }
+
+        $sixteenPixelBlocksPerLine = $width >> 4;
+        $wordsPerLine = $sixteenPixelBlocksPerLine * $wordsPerSixteenPixelBlock;
+        $expectedWordCount = $wordsPerLine * $height;
+
+        if (count($words) != $expectedWordCount) {
+            throw RuntimeException('Element count in words array does not match other parameters');
+        }
+
+        foreach ($words as $word) {
+            if (!is_int($word)) {
+                throw new RuntimeException('Array element does not contain int');
+            }
+
+            if ($word < 0 || $word > 65535) {
+                throw new RuntimeException('Array element is out of word range');
+            }
+        }
+    }
 }
 
 class SpriteConvertor
@@ -611,7 +715,6 @@ class SpriteConvertor
             );
         }
 
-
         return $spriteBuilder->build();
     }
 }
@@ -624,7 +727,8 @@ $bossMaskData = $indexedBitmap->extractRegionToIndexedBitmap(109, 220, 109, 98)
 
 $maskedSprite = SpriteConvertor::createMaskedSprite($bossBitmapData, $bossMaskData);
 
-$shiftedSprite = $maskedSprite->getShiftedCopy(2);
+$shiftedSprite = $maskedSprite->getShiftedCopy(1);
+$shiftedSprite->exportToPlanarData();
 
 var_dump($maskedSprite->getWidth());
 var_dump($shiftedSprite->getWidth());
