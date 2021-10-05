@@ -191,7 +191,7 @@ class IndexedBitmap {
             $this->getHeight() == $indexedBitmap->getHeight();
     }
 
-    public function extractBitplanesToSprite(Sprite $sprite)
+    /*public function extractBitplanesToSprite(Sprite $sprite)
     {
         $spriteLineIndex = 0;
 
@@ -218,7 +218,7 @@ class IndexedBitmap {
             );
             $spriteLineIndex++;
         }
-    }
+    }*/
 
     public function getWidth()
     {
@@ -228,6 +228,15 @@ class IndexedBitmap {
     public function getHeight()
     {
         return count($this->lines);
+    }
+
+    public function getLineAt(int $lineIndex)
+    {
+        if (!isset($this->lines[$lineIndex])) {
+            throw new RuntimeException('Requested non-existent line number');
+        }
+
+        return $this->lines[$lineIndex];
     }
 }
 
@@ -254,7 +263,7 @@ class Bitplane
         $this->bits = $bits;
     }
 
-    public function getShiftedCopy($bitsToShift)
+    public function getShiftedCopy(int $bitsToShift)
     {
         if ($bitsToShift == 0) {
             return clone $this;
@@ -264,7 +273,7 @@ class Bitplane
 
         $shiftedBits = array_merge(
             array_fill(0, $bitsToShift, 0),
-            $bits,
+            $this->bits,
             array_fill(0, 16 - $bitsToShift, 0)
         );
 
@@ -325,13 +334,270 @@ class WordSequence
         return $shiftedBitplane->toWordSequence();
     }
 
-    public function getSpriteWidth()
+    public function getLength()
     {
-        return count($this->words) * 16;
+        return count($this->words);
     }
 }
 
-class SpriteLine {
+
+class SpriteLineBuilder
+{
+    const MAX_BITPLANE_INDEX = 3;
+
+    private $width;
+    private $bitplaneWordSequences = [];
+    private $maskWordSequence = [];
+    private $masked;
+
+    public function __construct(int $width, bool $masked)
+    {
+        if ($width & 15 != 0) {
+            throw new RuntimeException('Sprite line width must be divisible by 16');
+        }
+
+        if ($width < 16) {
+            throw new RuntimeException('Sprite line width must be at least 16');
+        }
+
+        $this->width = $width;
+        $this->masked = $masked;
+    }
+
+    public function setBitplaneWordSequence(int $bitplaneIndex, WordSequence $wordSequence)
+    {
+        if ($bitplaneIndex < 0 || $bitplaneIndex > self::MAX_BITPLANE_INDEX) {
+            throw new RuntimeException('Bitplane index out of bounds');
+        }
+
+        if (!$this->isWordSequenceLengthValid($wordSequence)) {
+            //var_dump($wordSequence->getLength() << 4);
+            //var_dump($this->width);
+            throw new RuntimeException('Bitplane word sequence length is not as expected');
+        }
+
+        $this->bitplaneWordSequences[$bitplaneIndex] = $wordSequence;
+    }
+
+    public function getBitplaneWordSequences()
+    {
+        return $this->bitplaneWordSequences;
+    }
+
+    public function setMaskWordSequence(WordSequence $wordSequence)
+    {
+        if (!$this->masked) {
+            throw new RuntimeException('Cannot set mask word sequence on unmasked sprite');
+        }
+
+        if (!$this->isWordSequenceLengthValid($wordSequence)) {
+            throw new RuntimeException('Mask word sequence length is not as expected');
+        }
+
+        $this->maskWordSequence = $wordSequence;
+    }
+
+    public function getMaskWordSequence()
+    {
+        return $this->maskWordSequence; 
+    }
+
+    public function getWidth()
+    {
+        return $this->width;
+    }
+
+    public function build()
+    {
+        return SpriteLine::createFromSpriteLineBuilder($this);
+    }
+
+    public function isComplete()
+    {
+        if ($this->masked && is_null($this->maskWordSequence)) {
+            return false;
+        }
+
+        for ($index = 0; $index <= self::MAX_BITPLANE_INDEX; $index++) {
+            if (!isset($this->bitplaneWordSequences[$index])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function isWordSequenceLengthValid(WordSequence $wordSequence)
+    {
+        return ($wordSequence->getLength() << 4) == $this->width;
+    }
+}
+
+class SpriteLine
+{
+    private $width;
+    private $bitplaneWordSequences = [];
+    private $maskWordSequence;
+
+    private function __construct()
+    {
+    }
+
+    public static function createFromSpriteLineBuilder(SpriteLineBuilder $spriteLineBuilder)
+    {
+        if (!$spriteLineBuilder->isComplete()) {
+            throw new RuntimeException('Cannot create SpriteLine from incomplete SpriteLineBuilder');
+        }
+
+        $spriteLine = new static();
+        $spriteLine->width = $spriteLineBuilder->getWidth();
+        $spriteLine->bitplaneWordSequences = $spriteLineBuilder->getBitplaneWordSequences();
+        $spriteLine->maskWordSequence = $spriteLineBuilder->getMaskWordSequence();
+
+        return $spriteLine;
+    }
+
+    public function isMasked()
+    {
+        return !is_null($this->maskWordSequence);
+    }
+
+    public function getWidth()
+    {
+        return $this->width;
+    }
+
+    public function getShiftedCopy(int $bitsToShift)
+    {
+        if ($bitsToShift < 0 || $bitsToShift > 15) {
+            throw new RuntimeException('Invalid bits to shift value');
+        }
+
+        $shiftedSpriteLine = new static($sprite);
+        $shiftedSpriteLine->width = $this->width;
+
+        for ($index = 0; $index < 4; $index++) {
+            $shiftedBitplaneWordSequence = $this->bitplaneWordSequences[$index]->getShiftedCopy($bitsToShift);
+            $shiftedSpriteLine->bitplaneWordSequences[$index] = $shiftedBitplaneWordSequence;
+        }
+
+        if (isset($this->maskWordSequence)) {
+            $shiftedMaskWordSequence = $this->maskWordSequence->getShiftedCopy($bitsToShift);
+            $shiftedSpriteLine->maskWordSequence = $shiftedMaskWordSequence;
+        }
+
+        return $shiftedSpriteLine;
+    }
+}
+
+
+class SpriteBuilder
+{
+    private $width;
+    private $height;
+    private $masked;
+    private $spriteLines = [];
+
+    public function __construct(int $width, int $height, bool $masked)
+    {
+        $this->width = $width;
+        $this->height = $height;
+        $this->masked = $masked;
+    }
+
+    public function addSpriteLine(SpriteLine $spriteLine)
+    {
+        if (!$spriteLine->getWidth() == $this->width) {
+            throw new RuntimeException('Cannot add SpriteLine with mismatched width');
+        }
+
+        if (!$spriteLine->isMasked() == $this->masked) {
+            throw new RuntimeException('Cannot add unmasked sprite line to masked sprite or vice-versa');
+        }
+
+        if (count($this->spriteLines) == $this->height) {
+            throw new RuntimeException('Too many lines added to sprite');
+        }
+
+        $this->spriteLines[] = $spriteLine;
+    }
+
+    public function getMasked()
+    {
+        return $this->masked;
+    }
+
+    public function getWidth()
+    {
+        return $this->width;
+    }
+
+    public function getSpriteLines()
+    {
+        return $this->spriteLines;
+    }
+
+    public function isComplete()
+    {
+        return count($this->spriteLines) == $this->height;
+    }
+
+    public function build()
+    {
+        return Sprite::createFromSpriteBuilder($this);
+    }
+}
+
+
+class Sprite
+{
+    private $masked;
+    private $spriteLines;
+
+    private function __construct()
+    {
+    }
+
+    public static function createFromSpriteBuilder(SpriteBuilder $spriteBuilder)
+    {
+        $sprite = new static();
+
+        if (!$spriteBuilder->isComplete()) {
+            throw new RuntimeException('Cannot create Sprite from incomplete SpriteBuilder');
+        }
+
+        $sprite->masked = $spriteBuilder->getMasked();
+        $sprite->spriteLines = $spriteBuilder->getSpriteLines();
+
+        return $sprite;
+    }
+
+    public function getShiftedCopy(int $bitsToShift)
+    {
+        if ($bitsToShift < 0 || $bitsToShift > 15) {
+            throw new RuntimeException('Invalid bits to shift value');
+        }
+
+        $shiftedSpriteLines = [];
+
+        foreach ($this->spriteLines as $spriteLine) {
+            $shiftedSpriteLines[] = $spriteLine->getShiftedCopy($bitsToShift);
+        }
+
+        $shiftedSprite = new static();
+        $shiftedSprite->masked = $this->masked;
+        $shiftedSprite->spriteLines = $shiftedSpriteLines;
+
+        return $shiftedSprite;
+    }
+
+    public function getWidth()
+    {
+        return $this->spriteLines[0]->getWidth();
+    }
+}
+
+/*class SpriteLine {
     const HIGHEST_BITPLANE = 3;
 
     private $sprite;
@@ -418,9 +684,9 @@ class SpriteLine {
     {
         return $sprite === $this->sprite;
     }
-}
+}*/
 
-class Sprite {
+/*class Sprite {
     private $spriteLines = [];
     private $masked;
     private $width;
@@ -501,10 +767,10 @@ class Sprite {
         // we want to iterate through the mask a word at a time
         // we want to iterate through the graphics a longword at a time
     }
-}
+}*/
 
 
-class SpriteBuilder
+class SpriteConvertor
 {
     public static function createUnmaskedSprite(IndexedBitmap $bitmapData)
     {
@@ -512,17 +778,41 @@ class SpriteBuilder
         $bitmapData->extractBitplanesToSprite($sprite);
     }
 
-    public static function createMaskedSprite(IndexedBitmap $bitmapData, IndexedBitmap $maskData)
+    public static function createMaskedSprite(IndexedBitmap $bitplaneData, IndexedBitmap $maskData)
     {
-        if (!$bitmapData->matchesDimensionsOf($maskData)) {
+        if (!$bitplaneData->matchesDimensionsOf($maskData)) {
             throw new RuntimeException('Bitmap data does not match dimensions of mask data');
         }
 
-        $sprite = new Sprite($bitmapData->getWidth(), $bitmapData->getHeight(), true);
-        $bitmapData->extractBitplanesToSprite($sprite);
-        $maskData->extractMaskToSprite($sprite);
+        $bitmapDataWidth = $bitplaneData->getWidth();
+        $bitmapDataHeight = $bitplaneData->getHeight();
 
-        return $sprite;
+        $spriteBuilder = new SpriteBuilder($bitmapDataWidth, $bitmapDataHeight, true);
+
+        $lineIndex = 0;
+        for ($lineIndex = 0; $lineIndex < $bitmapDataHeight; $lineIndex++) {
+            $spriteLineBuilder = new SpriteLineBuilder($bitmapDataWidth, true);
+
+            $bitplaneLine = $bitplaneData->getLineAt($lineIndex);
+            for ($index = 0; $index < 4; $index++) {
+                $spriteLineBuilder->setBitplaneWordSequence(
+                    $index,
+                    $bitplaneLine->toBitplaneWordSequence($index)
+                );
+            }
+
+            $maskLine = $maskData->getLineAt($lineIndex);
+            $spriteLineBuilder->setMaskWordSequence(
+                $maskLine->toMaskWordSequence()
+            );
+
+            $spriteBuilder->addSpriteLine(
+                $spriteLineBuilder->build()
+            );
+        }
+
+
+        return $spriteBuilder->build();
     }
 }
 
@@ -532,6 +822,8 @@ $bossBitmapData = $indexedBitmap->extractRegionToIndexedBitmap(0, 220, 109, 98)
 $bossMaskData = $indexedBitmap->extractRegionToIndexedBitmap(109, 220, 109, 98)
     ->getCopyRoundedTo16PixelDivisibleWidth();
 
-$maskedSprite = SpriteBuilder::createMaskedSprite($bossBitmapData, $bossMaskData);
+$maskedSprite = SpriteConvertor::createMaskedSprite($bossBitmapData, $bossMaskData);
+
+$shiftedSprite = $maskedSprite->getShiftedCopy(2);
 
 var_dump($maskedSprite);
