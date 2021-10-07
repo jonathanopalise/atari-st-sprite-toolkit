@@ -80,7 +80,7 @@ _draw_sprite:
     move.w 22(a7),d3 ; source_data_height
 
     moveq.l #0,d5
-    move.w 8(a7),d5 ; ypos
+    move.w 10(a7),d5 ; ypos
 
     move.l d1,d6
     add.l d2,d6 
@@ -90,13 +90,7 @@ _draw_sprite:
 
     move.l 12(a7),a0 ; source data pointer
 
-    move.l 24(a7),a1
-
-boo:
-    nop
-    bra.s boo
-
-    rts
+    move.l 24(a7),a1 ; screen buffer
 
     moveq     #0,d0
     move.w    d0,leftclipped
@@ -419,8 +413,8 @@ draw_now:
     addq.l #2,a0                        ; move source to next bitplane
     bsr.s drawsceneryplane
 
-    cmp.w #10,d5
-    bne.s alldone
+    ;cmp.w #10,d5
+    ;bne.s alldone
 
     ; stop here if 3bpp
     addq.l #2,a1                        ; move destination to next bitplane
@@ -428,6 +422,9 @@ draw_now:
     bsr.s drawsceneryplane
 
 alldone:
+    nop
+    bra.s alldone
+
     rts
 
 drawsceneryplane:

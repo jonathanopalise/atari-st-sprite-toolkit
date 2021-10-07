@@ -603,6 +603,11 @@ class Sprite
         return $this->spriteLines[0]->getWidth();
     }
 
+    public function getHeight()
+    {
+        return count($this->spriteLines);
+    }
+
     public function exportToCompiledSprite()
     {
     }
@@ -671,6 +676,23 @@ class PlanarData
                 throw new RuntimeException('Array element is out of word range');
             }
         }
+
+        $this->words = $words;
+    }
+
+    public function exportToAsm(string $identifier)
+    {
+        $lines = [
+            '    public ' . $identifier,
+            '',
+            $identifier . ':'
+        ];
+
+        foreach ($this->words as $word) {
+            $lines[] = '    dc.w $' . dechex($word);
+        }
+
+        return implode("\n", $lines);
     }
 }
 
@@ -719,7 +741,7 @@ class SpriteConvertor
     }
 }
 
-$indexedBitmap = IndexedBitmap::load('megaman.data', 320, 318);
+/*$indexedBitmap = IndexedBitmap::load('megaman.data', 320, 318);
 $bossBitmapData = $indexedBitmap->extractRegionToIndexedBitmap(0, 220, 109, 98)
     ->getCopyRoundedTo16PixelDivisibleWidth();
 $bossMaskData = $indexedBitmap->extractRegionToIndexedBitmap(109, 220, 109, 98)
@@ -728,8 +750,5 @@ $bossMaskData = $indexedBitmap->extractRegionToIndexedBitmap(109, 220, 109, 98)
 $maskedSprite = SpriteConvertor::createMaskedSprite($bossBitmapData, $bossMaskData);
 
 $shiftedSprite = $maskedSprite->getShiftedCopy(1);
-$shiftedSprite->exportToPlanarData();
-
-var_dump($maskedSprite->getWidth());
-var_dump($shiftedSprite->getWidth());
-
+$planarData = $shiftedSprite->exportToPlanarData();
+echo $planarData->exportToAsm('mega_man');*/
