@@ -3,8 +3,9 @@ CFLAGS = -D__ATARI__ -D__M68000__ -DELF_CONFIG_STACK=1024 -flto -fleading-unders
 VASM = vasmm68k_mot
 VASM_OPTS = -no-opt
 VLINK = vlink
+PHP = php
 
-OBJECT_FILES = src/demo.o src/blitter_sprites.o src/mega_man.o
+OBJECT_FILES = src/demo.o src/blitter_sprites.o src/mega_man.o src/generated/palette.o
 
 bin/demo.prg: $(OBJECT_FILES)
 	$(CC) -o src/demo.elf libcxx/brownboot.o libcxx/browncrti.o libcxx/browncrtn.o libcxx/browncrt++.o libcxx/zerolibc.o libcxx/zerocrtfini.o $(OBJECT_FILES) -O3 -Wl,--emit-relocs -Wl,-e_start -Ttext=0 -nostartfiles -m68000 -Ofast -fomit-frame-pointer -D__ATARI__ -D__M68000__ -DELF_CONFIG_STACK=1024 -fstrict-aliasing -fcaller-saves -flto -ffunction-sections -fdata-sections -fleading-underscore
@@ -19,6 +20,12 @@ src/blitter_sprites.o: src/blitter_sprites.s src/blitter_sprites.h
 
 src/mega_man.o: src/mega_man.s
 	$(VASM) $(VASM_OPTS) src/mega_man.s -Felf -o src/mega_man.o
+
+src/generated/palette.o: src/generated/palette.s
+	$(VASM) $(VASM_OPTS) src/generated/palette.s -Felf -o src/generated/palette.o
+
+src/generated/palette.s: megaman.data.pal src/generate_palette.php
+	$(PHP) src/generate_palette.php megaman.data.pal src/generated/palette.s
 
 src/mega_man.s: megaman.data src/generate_mega_man.php src/library.php
 	php src/generate_mega_man.php

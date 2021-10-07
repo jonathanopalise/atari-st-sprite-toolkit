@@ -66,7 +66,8 @@ class IndexedBitmapLine {
         $sixteenPixelArrays = array_chunk($this->pixels, 16);
         foreach ($sixteenPixelArrays as $sixteenPixelArray) {
             foreach ($sixteenPixelArray as $pixel) {
-                $bits[] = ($pixel > 0) ? 1 : 0;
+                // TODO: check
+                $bits[] = ($pixel > 0) ? 0 : 1;
             }
         }
 

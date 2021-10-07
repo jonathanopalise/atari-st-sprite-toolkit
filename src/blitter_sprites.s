@@ -19,6 +19,8 @@ sprite_jump_table:
     dc.l draw_two_line_chunks    ; 48 wide
 
 _draw_sprite:
+
+
     ; inputs:
 
     ; a0 = source data address?
@@ -66,6 +68,7 @@ _draw_sprite:
     ; source_data_height = word at sp + 22
     ; screen_buffer = long at sp + 24
 
+
     moveq.l #0,d1
     move.w 18(a7),d1 ; source_data_width
     lsr.w #4,d1
@@ -91,6 +94,8 @@ _draw_sprite:
     move.l 12(a7),a0 ; source data pointer
 
     move.l 24(a7),a1 ; screen buffer
+
+    movem.l d0-d7/a0-a6,-(sp)
 
     moveq     #0,d0
     move.w    d0,leftclipped
@@ -422,8 +427,10 @@ draw_now:
     bsr.s drawsceneryplane
 
 alldone:
-    nop
-    bra.s alldone
+    ;nop
+    ;bra.s alldone
+
+    movem.l (sp)+,d0-d7/a0-a6
 
     rts
 
