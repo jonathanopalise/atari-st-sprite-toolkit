@@ -5,10 +5,8 @@ require 'library.php';
 $indexedBitmap = IndexedBitmap::load('megaman.data', 320, 318);
 $bossBitmapData = $indexedBitmap->extractRegionToIndexedBitmap(0, 220, 109, 98)
     ->getCopyRoundedTo16PixelDivisibleWidth();
-$bossMaskData = $indexedBitmap->extractRegionToIndexedBitmap(109, 220, 109, 98)
-    ->getCopyRoundedTo16PixelDivisibleWidth();
 
-$maskedSprite = SpriteConvertor::createMaskedSprite($bossBitmapData, $bossMaskData);
+$maskedSprite = SpriteConvertor::createMaskedSprite($bossBitmapData);
 
 echo("Generate 'mega man' sprite:\n");
 echo("- width: ".$maskedSprite->getWidth()."\n");

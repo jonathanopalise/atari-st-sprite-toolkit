@@ -21,9 +21,11 @@ void main_supervisor() {
     //draw_sprite(60,40,(void *)mega_man,112,98,(void *)physBase);
     //draw_sprite(260,140,(void *)mega_man,112,98,(void *)physBase);
     //draw_sprite(80,60,(void *)mega_man,112,98,(void *)physBase);
-    for (int index = 0; index<250; index++) {
+    for (int index = 0; index<250; index+=10) {
         draw_sprite(index,20,(void *)mega_man,112,98,physBase);
-        draw_sprite(index,40,(void *)mega_man,112,98,0xf8000);
+        draw_sprite(index,60,(void *)mega_man,112,98,physBase);
+        draw_sprite(index,100,(void *)mega_man,112,98,physBase);
+        draw_sprite(index,140,(void *)mega_man,112,98,physBase);
         //*(((int *)physBase) + (index * 16)) = 0xffff;
     }
     //draw_sprite(40,40,(void *)mega_man,112,98,(void *)0xf8000);

@@ -31,7 +31,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -66,7 +66,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -101,7 +101,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -136,7 +136,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -171,7 +171,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -206,7 +206,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -241,7 +241,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -276,7 +276,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -311,7 +311,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -346,7 +346,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -381,7 +381,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -416,7 +416,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -451,7 +451,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -486,7 +486,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -521,7 +521,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -556,7 +556,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -591,7 +591,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -626,7 +626,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -661,7 +661,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -696,7 +696,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -731,7 +731,7 @@ _mega_man:
     dc.w $0
     dc.w $1f00
     dc.w $6000
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -766,7 +766,7 @@ _mega_man:
     dc.w $0
     dc.w $fc0
     dc.w $f000
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -801,7 +801,7 @@ _mega_man:
     dc.w $0
     dc.w $6060
     dc.w $8000
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -836,7 +836,7 @@ _mega_man:
     dc.w $0
     dc.w $10
     dc.w $1f80
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -871,7 +871,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $ffe0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -906,7 +906,7 @@ _mega_man:
     dc.w $f800
     dc.w $f800
     dc.w $fff0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -941,7 +941,7 @@ _mega_man:
     dc.w $fc00
     dc.w $fc00
     dc.w $fff8
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -976,7 +976,7 @@ _mega_man:
     dc.w $fe00
     dc.w $fe00
     dc.w $fffc
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -1011,7 +1011,7 @@ _mega_man:
     dc.w $fe00
     dc.w $fe00
     dc.w $fffc
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -1046,7 +1046,7 @@ _mega_man:
     dc.w $fc00
     dc.w $fc00
     dc.w $fe1e
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -1081,7 +1081,7 @@ _mega_man:
     dc.w $f800
     dc.w $f800
     dc.w $fc0e
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -1116,7 +1116,7 @@ _mega_man:
     dc.w $f000
     dc.w $f000
     dc.w $f806
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -1151,7 +1151,7 @@ _mega_man:
     dc.w $f000
     dc.w $f000
     dc.w $f806
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -1186,7 +1186,7 @@ _mega_man:
     dc.w $f000
     dc.w $f000
     dc.w $f002
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -1221,7 +1221,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $f000
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -1256,7 +1256,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $f000
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -1291,7 +1291,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $f000
-    dc.w $7fff
+    dc.w $7ff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -1326,7 +1326,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $f000
-    dc.w $3fff
+    dc.w $3ff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -1361,7 +1361,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $f800
-    dc.w $1fff
+    dc.w $1ff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -1396,7 +1396,7 @@ _mega_man:
     dc.w $81
     dc.w $0
     dc.w $f07e
-    dc.w $fff
+    dc.w $ff8
     dc.w $4000
     dc.w $8000
     dc.w $0
@@ -1431,7 +1431,7 @@ _mega_man:
     dc.w $600
     dc.w $0
     dc.w $81ff
-    dc.w $7ff
+    dc.w $7f8
     dc.w $3000
     dc.w $c000
     dc.w $0
@@ -1466,7 +1466,7 @@ _mega_man:
     dc.w $1c08
     dc.w $0
     dc.w $3f0
-    dc.w $3ff
+    dc.w $3f8
     dc.w $b800
     dc.w $4000
     dc.w $0
@@ -1501,7 +1501,7 @@ _mega_man:
     dc.w $40
     dc.w $2
     dc.w $385
-    dc.w $3ff
+    dc.w $3f8
     dc.w $7800
     dc.w $0
     dc.w $0
@@ -1536,7 +1536,7 @@ _mega_man:
     dc.w $0
     dc.w $8
     dc.w $f836
-    dc.w $1ff
+    dc.w $1f8
     dc.w $bc00
     dc.w $0
     dc.w $8000
@@ -1571,7 +1571,7 @@ _mega_man:
     dc.w $f000
     dc.w $f025
     dc.w $feda
-    dc.w $1ff
+    dc.w $1f8
     dc.w $3c00
     dc.w $0
     dc.w $0
@@ -1606,7 +1606,7 @@ _mega_man:
     dc.w $c00
     dc.w $c11
     dc.w $1f6c
-    dc.w $1ff
+    dc.w $1f8
     dc.w $bc00
     dc.w $0
     dc.w $8000
@@ -1641,7 +1641,7 @@ _mega_man:
     dc.w $6200
     dc.w $8206
     dc.w $e7b0
-    dc.w $1ff
+    dc.w $1f8
     dc.w $7c00
     dc.w $0
     dc.w $0
@@ -1676,7 +1676,7 @@ _mega_man:
     dc.w $900
     dc.w $f11b
     dc.w $fbc0
-    dc.w $1ff
+    dc.w $1f8
     dc.w $7c00
     dc.w $0
     dc.w $0
@@ -1711,7 +1711,7 @@ _mega_man:
     dc.w $8400
     dc.w $f80c
     dc.w $fde0
-    dc.w $1ff
+    dc.w $1f8
     dc.w $fc00
     dc.w $0
     dc.w $0
@@ -1746,7 +1746,7 @@ _mega_man:
     dc.w $e200
     dc.w $fc04
     dc.w $fef0
-    dc.w $3ff
+    dc.w $3f8
     dc.w $f800
     dc.w $0
     dc.w $0
@@ -1781,7 +1781,7 @@ _mega_man:
     dc.w $e300
     dc.w $fc00
     dc.w $ff70
-    dc.w $3ff
+    dc.w $3f8
     dc.w $f800
     dc.w $0
     dc.w $0
@@ -1816,7 +1816,7 @@ _mega_man:
     dc.w $e380
     dc.w $fc00
     dc.w $ffb8
-    dc.w $3ff
+    dc.w $3f8
     dc.w $f800
     dc.w $0
     dc.w $0
@@ -1851,7 +1851,7 @@ _mega_man:
     dc.w $e780
     dc.w $f800
     dc.w $ffb8
-    dc.w $7ff
+    dc.w $7f8
     dc.w $f000
     dc.w $0
     dc.w $0
@@ -1886,7 +1886,7 @@ _mega_man:
     dc.w $87c0
     dc.w $f800
     dc.w $ffd8
-    dc.w $7ff
+    dc.w $7f8
     dc.w $f000
     dc.w $0
     dc.w $0
@@ -1921,7 +1921,7 @@ _mega_man:
     dc.w $fc0
     dc.w $f000
     dc.w $ffd8
-    dc.w $fff
+    dc.w $ff8
     dc.w $e000
     dc.w $0
     dc.w $0
@@ -1956,7 +1956,7 @@ _mega_man:
     dc.w $fc0
     dc.w $f000
     dc.w $ffd8
-    dc.w $fff
+    dc.w $ff8
     dc.w $e000
     dc.w $0
     dc.w $0
@@ -1991,7 +1991,7 @@ _mega_man:
     dc.w $1fc0
     dc.w $e000
     dc.w $ffd8
-    dc.w $1fff
+    dc.w $1ff8
     dc.w $c000
     dc.w $0
     dc.w $0
@@ -2026,7 +2026,7 @@ _mega_man:
     dc.w $7fc0
     dc.w $8000
     dc.w $ffd8
-    dc.w $3fff
+    dc.w $3ff8
     dc.w $8000
     dc.w $0
     dc.w $0
@@ -2061,7 +2061,7 @@ _mega_man:
     dc.w $ffc0
     dc.w $0
     dc.w $ffd8
-    dc.w $7fff
+    dc.w $7ff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2096,7 +2096,7 @@ _mega_man:
     dc.w $ffc0
     dc.w $0
     dc.w $ffd8
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2131,7 +2131,7 @@ _mega_man:
     dc.w $ffc0
     dc.w $0
     dc.w $ffd8
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2166,7 +2166,7 @@ _mega_man:
     dc.w $ffc0
     dc.w $0
     dc.w $ffd0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2201,7 +2201,7 @@ _mega_man:
     dc.w $ff80
     dc.w $0
     dc.w $ff80
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2236,7 +2236,7 @@ _mega_man:
     dc.w $9f80
     dc.w $0
     dc.w $9f80
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2271,7 +2271,7 @@ _mega_man:
     dc.w $7700
     dc.w $1800
     dc.w $7f00
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2306,7 +2306,7 @@ _mega_man:
     dc.w $ee00
     dc.w $7000
     dc.w $fe00
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2341,7 +2341,7 @@ _mega_man:
     dc.w $1c00
     dc.w $e000
     dc.w $fc00
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2376,7 +2376,7 @@ _mega_man:
     dc.w $f000
     dc.w $0
     dc.w $f000
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2411,7 +2411,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2446,7 +2446,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2481,7 +2481,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $fc0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2516,7 +2516,7 @@ _mega_man:
     dc.w $1c00
     dc.w $0
     dc.w $3e0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2551,7 +2551,7 @@ _mega_man:
     dc.w $6200
     dc.w $0
     dc.w $1df0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2586,7 +2586,7 @@ _mega_man:
     dc.w $8100
     dc.w $0
     dc.w $7ef0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2621,7 +2621,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $fff0
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2656,7 +2656,7 @@ _mega_man:
     dc.w $160
     dc.w $100
     dc.w $ff98
-    dc.w $ffff
+    dc.w $fff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2691,7 +2691,7 @@ _mega_man:
     dc.w $e0
     dc.w $0
     dc.w $ff00
-    dc.w $7fff
+    dc.w $7ff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2726,7 +2726,7 @@ _mega_man:
     dc.w $e0
     dc.w $0
     dc.w $ff00
-    dc.w $7fff
+    dc.w $7ff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2761,7 +2761,7 @@ _mega_man:
     dc.w $e0
     dc.w $0
     dc.w $ff00
-    dc.w $7fff
+    dc.w $7ff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2796,7 +2796,7 @@ _mega_man:
     dc.w $e0
     dc.w $0
     dc.w $ff00
-    dc.w $3fff
+    dc.w $3ff8
     dc.w $8000
     dc.w $0
     dc.w $0
@@ -2831,7 +2831,7 @@ _mega_man:
     dc.w $1e0
     dc.w $0
     dc.w $fe00
-    dc.w $3fff
+    dc.w $3ff8
     dc.w $8000
     dc.w $0
     dc.w $0
@@ -2866,7 +2866,7 @@ _mega_man:
     dc.w $300
     dc.w $0
     dc.w $fc00
-    dc.w $3fff
+    dc.w $3ff8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -2901,7 +2901,7 @@ _mega_man:
     dc.w $48f
     dc.w $70
     dc.w $f8ff
-    dc.w $1fff
+    dc.w $1ff8
     dc.w $8000
     dc.w $8000
     dc.w $0
@@ -2936,7 +2936,7 @@ _mega_man:
     dc.w $af7
     dc.w $1f8
     dc.w $f3ff
-    dc.w $fff
+    dc.w $ff8
     dc.w $e000
     dc.w $e000
     dc.w $0
@@ -2971,7 +2971,7 @@ _mega_man:
     dc.w $f787
     dc.w $3f8
     dc.w $7ff
-    dc.w $7ff
+    dc.w $7f8
     dc.w $f000
     dc.w $f000
     dc.w $0
@@ -3006,7 +3006,7 @@ _mega_man:
     dc.w $ee80
     dc.w $700
     dc.w $f80
-    dc.w $7ff
+    dc.w $7f8
     dc.w $3000
     dc.w $3000
     dc.w $0
@@ -3041,7 +3041,7 @@ _mega_man:
     dc.w $9a00
     dc.w $c7f
     dc.w $1e00
-    dc.w $7ff
+    dc.w $7f8
     dc.w $c000
     dc.w $0
     dc.w $c000
@@ -3076,7 +3076,7 @@ _mega_man:
     dc.w $7000
     dc.w $1908
     dc.w $78f0
-    dc.w $7ff
+    dc.w $7f8
     dc.w $0
     dc.w $0
     dc.w $0
@@ -3111,7 +3111,7 @@ _mega_man:
     dc.w $e007
     dc.w $7420
     dc.w $f3c7
-    dc.w $1ff
+    dc.w $1f8
     dc.w $f800
     dc.w $f800
     dc.w $0
@@ -3146,7 +3146,7 @@ _mega_man:
     dc.w $8007
     dc.w $e018
     dc.w $ef9f
-    dc.w $ff
+    dc.w $f8
     dc.w $fe00
     dc.w $fe00
     dc.w $0
@@ -3181,7 +3181,7 @@ _mega_man:
     dc.w $3b
     dc.w $807c
     dc.w $9f7f
-    dc.w $3f
+    dc.w $38
     dc.w $cf00
     dc.w $cf00
     dc.w $0
@@ -3216,7 +3216,7 @@ _mega_man:
     dc.w $7d
     dc.w $fe
     dc.w $7eff
-    dc.w $1f
+    dc.w $18
     dc.w $d7c0
     dc.w $d7c0
     dc.w $0
@@ -3251,7 +3251,7 @@ _mega_man:
     dc.w $fd
     dc.w $1fe
     dc.w $fdff
-    dc.w $f
+    dc.w $8
     dc.w $dbe0
     dc.w $cbe0
     dc.w $1000
@@ -3286,7 +3286,7 @@ _mega_man:
     dc.w $3fc
     dc.w $81ff
     dc.w $7bff
-    dc.w $f
+    dc.w $8
     dc.w $dde0
     dc.w $c5e0
     dc.w $1800
@@ -3321,7 +3321,7 @@ _mega_man:
     dc.w $1fc
     dc.w $3ff
     dc.w $3ff
-    dc.w $7
+    dc.w $0
     dc.w $ddf0
     dc.w $c1f0
     dc.w $1c00
@@ -3356,7 +3356,7 @@ _mega_man:
     dc.w $f8
     dc.w $ffff
     dc.w $ffff
-    dc.w $7
+    dc.w $0
     dc.w $def0
     dc.w $c2f0
     dc.w $1c00
@@ -3391,7 +3391,7 @@ _mega_man:
     dc.w $1
     dc.w $fffe
     dc.w $ffff
-    dc.w $7
+    dc.w $0
     dc.w $def0
     dc.w $c2f0
     dc.w $1c00
@@ -3426,7 +3426,7 @@ _mega_man:
     dc.w $0
     dc.w $0
     dc.w $0
-    dc.w $7
+    dc.w $0
     dc.w $0
     dc.w $0
     dc.w $0

@@ -2,16 +2,39 @@
 
 // TODO: strict types?
 
+class IndexedBitmapPixel
+{
+    private $colourIndex;
+    private $visible;
+
+    public function __construct(int $colourIndex, bool $visible)
+    {
+        if ($colourIndex < 0 || $colourIndex > 15) {
+            var_dump($colourIndex);
+            throw new RuntimeException('Colour index out of range');
+        }
+
+        $this->colourIndex = $colourIndex;
+        $this->visible = $visible;
+    }
+
+    public function getColourIndex()
+    {
+        return $this->colourIndex;
+    }
+
+    public function getVisible()
+    {
+        return $this->visible;
+    }
+}
+
 class IndexedBitmapLine {
     private $pixels = [];
 
-    public function addPixel(int $index)
+    public function addPixel(IndexedBitmapPixel $indexedBitmapPixel)
     {
-        if ($index > 15) {
-            throw new RuntimeException('Index higher than 15 not allowed');
-        }
-
-        $this->pixels[] = $index;
+        $this->pixels[] = $indexedBitmapPixel;
     }
 
     public function getPixel(int $xpos)
@@ -30,10 +53,7 @@ class IndexedBitmapLine {
 
     public function toBitplaneWordSequence($bitplaneIndex)
     {
-        $pixelCount = count($this->pixels);
-        if ($pixelCount & 15 != 0) {
-            throw new RuntimeException('Can only extract bitplanes where width divisible by 16');
-        }
+        $this->validatePixelCount('Can only extract bitplanes where width divisible by 16');
 
         if ($bitplaneIndex < 0 || $bitplaneIndex > 3) {
             throw new RuntimeException('Bitplane index must be between 0 and 3 inclusive');
@@ -45,7 +65,7 @@ class IndexedBitmapLine {
         $sixteenPixelArrays = array_chunk($this->pixels, 16);
         foreach ($sixteenPixelArrays as $sixteenPixelArray) {
             foreach ($sixteenPixelArray as $pixel) {
-                $bits[] = ($pixel & $andValue) ? 1 : 0;
+                $bits[] = ($pixel->getColourIndex() & $andValue) ? 1 : 0;
             }
         }
 
@@ -56,24 +76,28 @@ class IndexedBitmapLine {
 
     public function toMaskWordSequence()
     {
-        $pixelCount = count($this->pixels);
-        if ($pixelCount & 15 != 0) {
-            throw new RuntimeException('Can only extract mask where width divisible by 16');
-        }
+        $this->validatePixelCount('Can only extract mask where width divisible by 16');
 
         $bits = [];
 
         $sixteenPixelArrays = array_chunk($this->pixels, 16);
         foreach ($sixteenPixelArrays as $sixteenPixelArray) {
             foreach ($sixteenPixelArray as $pixel) {
-                // TODO: check
-                $bits[] = ($pixel > 0) ? 0 : 1;
+                $bits[] = $pixel->getVisible() ? 1 : 0;
             }
         }
 
         $bitplane = new Bitplane($bits);
 
         return $bitplane->toWordSequence();
+    }
+
+    private function validatePixelCount(string $errorMessage)
+    {
+        $pixelCount = count($this->pixels);
+        if ($pixelCount & 15 != 0) {
+            throw new RuntimeException($errorMessage);
+        }
     }
 }
 
@@ -103,7 +127,10 @@ class IndexedBitmap {
             $line = new IndexedBitmapLine();
             for ($x = 0; $x < $width; $x++) {
                 $pixelIndex = ord($contents[$offset]);
-                $line->addPixel($pixelIndex);
+                $visible = ord($contents[$offset+1]) == 0xff ? false: true;
+                $line->addPixel(
+                    new IndexedBitmapPixel($pixelIndex, $visible)
+                );
                 $offset += 2;
             }
             $lines[] = $line;
@@ -176,7 +203,9 @@ class IndexedBitmap {
         foreach ($this->lines as $line) {
             $lineClone = clone $line;
             while ($lineClone->getWidth() < $expectedLineLength) {
-                $lineClone->addPixel(0);
+                $lineClone->addPixel(
+                    new IndexedBitmapPixel(0, false)
+                );
             }
             $lines[] = $lineClone;
         }
@@ -705,32 +734,27 @@ class SpriteConvertor
         $bitmapData->extractBitplanesToSprite($sprite);
     }
 
-    public static function createMaskedSprite(IndexedBitmap $bitplaneData, IndexedBitmap $maskData)
+    public static function createMaskedSprite(IndexedBitmap $indexedBitmap)
     {
-        if (!$bitplaneData->matchesDimensionsOf($maskData)) {
-            throw new RuntimeException('Bitmap data does not match dimensions of mask data');
-        }
+        $indexedBitmapWidth = $indexedBitmap->getWidth();
+        $indexedBitmapHeight = $indexedBitmap->getHeight();
 
-        $bitmapDataWidth = $bitplaneData->getWidth();
-        $bitmapDataHeight = $bitplaneData->getHeight();
-
-        $spriteBuilder = new SpriteBuilder($bitmapDataWidth, $bitmapDataHeight, true);
+        $spriteBuilder = new SpriteBuilder($indexedBitmapWidth, $indexedBitmapHeight, true);
 
         $lineIndex = 0;
-        for ($lineIndex = 0; $lineIndex < $bitmapDataHeight; $lineIndex++) {
-            $spriteLineBuilder = new SpriteLineBuilder($bitmapDataWidth, true);
+        for ($lineIndex = 0; $lineIndex < $indexedBitmapHeight; $lineIndex++) {
+            $spriteLineBuilder = new SpriteLineBuilder($indexedBitmapWidth, true);
 
-            $bitplaneLine = $bitplaneData->getLineAt($lineIndex);
+            $line = $indexedBitmap->getLineAt($lineIndex);
             for ($index = 0; $index < 4; $index++) {
                 $spriteLineBuilder->setBitplaneWordSequence(
                     $index,
-                    $bitplaneLine->toBitplaneWordSequence($index)
+                    $line->toBitplaneWordSequence($index)
                 );
             }
 
-            $maskLine = $maskData->getLineAt($lineIndex);
             $spriteLineBuilder->setMaskWordSequence(
-                $maskLine->toMaskWordSequence()
+                $line->toMaskWordSequence()
             );
 
             $spriteBuilder->addSpriteLine(
@@ -742,14 +766,3 @@ class SpriteConvertor
     }
 }
 
-/*$indexedBitmap = IndexedBitmap::load('megaman.data', 320, 318);
-$bossBitmapData = $indexedBitmap->extractRegionToIndexedBitmap(0, 220, 109, 98)
-    ->getCopyRoundedTo16PixelDivisibleWidth();
-$bossMaskData = $indexedBitmap->extractRegionToIndexedBitmap(109, 220, 109, 98)
-    ->getCopyRoundedTo16PixelDivisibleWidth();
-
-$maskedSprite = SpriteConvertor::createMaskedSprite($bossBitmapData, $bossMaskData);
-
-$shiftedSprite = $maskedSprite->getShiftedCopy(1);
-$planarData = $shiftedSprite->exportToPlanarData();
-echo $planarData->exportToAsm('mega_man');*/
