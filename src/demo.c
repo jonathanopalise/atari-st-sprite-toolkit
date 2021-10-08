@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <inttypes.h>
 #include <mint/osbind.h>
 #include <mint/sysbind.h>
@@ -20,8 +21,16 @@ void main_supervisor() {
     //draw_sprite(60,40,(void *)mega_man,112,98,(void *)physBase);
     //draw_sprite(260,140,(void *)mega_man,112,98,(void *)physBase);
     //draw_sprite(80,60,(void *)mega_man,112,98,(void *)physBase);
-    draw_sprite(85,60,(void *)mega_man,112,98,(void *)physBase);
-    while (1==1) {}
+    for (int index = 0; index<250; index++) {
+        draw_sprite(index,20,(void *)mega_man,112,98,physBase);
+        draw_sprite(index,40,(void *)mega_man,112,98,0xf8000);
+        //*(((int *)physBase) + (index * 16)) = 0xffff;
+    }
+    //draw_sprite(40,40,(void *)mega_man,112,98,(void *)0xf8000);
+    //draw_sprite(60,60,(void *)mega_man,112,98,(void *)0xf8000);
+    //}
+    //draw_sprite(60,40,(void *)mega_man,112,98,(void *)physBase);
+    while (1) {}
     //draw_sprite(-60,140,(void *)mega_man,112,98,(void *)physBase);
     //draw_sprite(260,-30,(void *)mega_man,112,98,(void *)physBase);
     //draw_sprite(-60,-30,(void *)mega_man,112,98,(void *)physBase);

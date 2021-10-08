@@ -68,22 +68,24 @@ _draw_sprite:
     ; source_data_height = word at sp + 22
     ; screen_buffer = long at sp + 24
 
+    move.l sp,a0
+    movem.l d2-d7/a2-a6,-(sp)
 
     moveq.l #0,d1
-    move.w 18(a7),d1 ; source_data_width
+    move.w 18(a0),d1 ; source_data_width
     lsr.w #4,d1
     move.l d1,d4
 
     moveq.l #0,d2
-    move.w 6(a7),d2 ; xpos
+    move.w 6(a0),d2 ; xpos
     move.l d2,a3
     lsr.w #4,d2
 
     moveq.l #0,d3
-    move.w 22(a7),d3 ; source_data_height
+    move.w 22(a0),d3 ; source_data_height
 
     moveq.l #0,d5
-    move.w 10(a7),d5 ; ypos
+    move.w 10(a0),d5 ; ypos
 
     move.l d1,d6
     add.l d2,d6 
@@ -91,11 +93,9 @@ _draw_sprite:
     move.l d5,d7
     add.l d3,d7
 
-    move.l 12(a7),a0 ; source data pointer
+    move.l 24(a0),a1 ; screen buffer
 
-    move.l 24(a7),a1 ; screen buffer
-
-    movem.l d0-d7/a0-a6,-(sp)
+    move.l 12(a0),a0 ; source data pointer
 
     moveq     #0,d0
     move.w    d0,leftclipped
@@ -200,10 +200,11 @@ label_7a374:
     add.w     d5,d2            ; begin expression...
     add.w     d2,d2            ; ...
     add.w     d2,d2            ; ...
-    adda.w    d2,a2            ; ... d2 = (d2 * 8 [see 7a38c]) + d5 (d5 must the start of a line within logbase, so a multiple of 160)
+    ;adda.w    d2,a2            ; ... d2 = (d2 * 8 [see 7a38c]) + d5 (d5 must the start of a line within logbase, so a multiple of 160)
                                                                               ; we set d5 to 0 and everything renders at the top line of the screen
-    adda.l    a1,a2        ; add buffer location into a2?
-    movea.l   a2,a1            ; transfer destination address into a1
+    ;adda.l    a1,a2        ; add buffer location into a2?
+    ;movea.l   a2,a1            ; transfer destination address into a1
+    add.w     d2,a1
     tst.w     d4
     beq       alldone
  
@@ -430,7 +431,7 @@ alldone:
     ;nop
     ;bra.s alldone
 
-    movem.l (sp)+,d0-d7/a0-a6
+    movem.l (sp)+,d2-d7/a2-a6
 
     rts
 
