@@ -103,10 +103,14 @@ class IndexedBitmapLine {
 
 class IndexedBitmap {
     private $lines;
+    private $originX;
+    private $originY;
 
-    private function __construct(array $lines)
+    private function __construct(array $lines, int $originX = 0, int $originY = 0)
     {
         $this->lines = $lines;
+        $this->originX = $originX;
+        $this->originY = $originY;
     }
 
     public static function load($filename, $width, $height)
@@ -139,7 +143,7 @@ class IndexedBitmap {
         return new static($lines);
     }
 
-    public function extractRegionToIndexedBitmap($left, $top, $width, $height)
+    public function extractRegionToIndexedBitmap($left, $top, $width, $height, $originX = 0, $originY = 0)
     {
         $sourceWidth = $this->getWidth();
         $sourceHeight = $this->getHeight();
@@ -186,7 +190,30 @@ class IndexedBitmap {
             $lines[] = $line;
         }
 
-        return new static($lines);
+        return new static($lines, $originX, $originY);
+    }
+
+    public function getScaledCopy(int $scaledWidth, int $scaledHeight)
+    {
+        $originalWidth = $this->getWidth();
+        $originalHeight = $this->getHeight();
+
+        $lines = [];
+        $offset = 0;
+        for ($y = 0; $y < $scaledHeight; $y++) {
+            $line = new IndexedBitmapLine();
+            for ($x = 0; $x < $scaledWidth; $x++) {
+                $sourceY = intval(($originalHeight / $scaledHeight) * $y);
+                $sourceX = intval(($originalWidth / $scaledWidth) * $x);
+
+                $line->addPixel($this->lines[$sourceY]->getPixel($sourceX));
+            }
+            $lines[] = $line;
+        }
+
+        $scaledOriginX = intval($this->originX / $originalWidth * $scaledWidth);
+        $scaledOriginY = intval($this->originY / $originalHeight * $scaledHeight);
+        return new static($lines, $scaledOriginX, $scaledOriginY);
     }
 
     public function getCopyRoundedTo16PixelDivisibleWidth()
@@ -204,7 +231,7 @@ class IndexedBitmap {
             $lineClone = clone $line;
             while ($lineClone->getWidth() < $expectedLineLength) {
                 $lineClone->addPixel(
-                    new IndexedBitmapPixel(0, false)
+                    new IndexedBitmapPixel(0, true)
                 );
             }
             $lines[] = $lineClone;
@@ -228,6 +255,17 @@ class IndexedBitmap {
     {
         return count($this->lines);
     }
+
+    public function getOriginX()
+    {
+        return $this->originX;
+    }
+
+    public function getOriginY()
+    {
+        return $this->originY;
+    }
+
 
     public function getLineAt(int $lineIndex)
     {
@@ -708,6 +746,11 @@ class PlanarData
         }
 
         $this->words = $words;
+    }
+
+    public function getWords()
+    {
+        return $this->words;
     }
 
     public function exportToAsm(string $identifier)
