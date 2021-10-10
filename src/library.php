@@ -106,7 +106,7 @@ class IndexedBitmap {
     private $originX;
     private $originY;
 
-    private function __construct(array $lines, int $originX = 0, int $originY = 0)
+    private function __construct(array $lines, int $originX, int $originY)
     {
         $this->lines = $lines;
         $this->originX = $originX;
@@ -143,7 +143,7 @@ class IndexedBitmap {
             $lines[] = $line;
         }
 
-        return new static($lines);
+        return new static($lines, 0, 0);
     }
 
     public function extractRegionToIndexedBitmap($left, $top, $width, $height, $originX = 0, $originY = 0)
@@ -216,6 +216,7 @@ class IndexedBitmap {
 
         $scaledOriginX = intval($this->originX / $originalWidth * $scaledWidth);
         $scaledOriginY = intval($this->originY / $originalHeight * $scaledHeight);
+
         return new static($lines, $scaledOriginX, $scaledOriginY);
     }
 
@@ -224,7 +225,7 @@ class IndexedBitmap {
         $firstLineWidth = $this->lines[0]->getWidth();
 
         if (($firstLineWidth & 15) == 0) {
-            return new static($this->lines);
+            return new static($this->lines, $this->originX, $this->originY);
         }
 
         $expectedLineLength = ($firstLineWidth + 16) & 240;

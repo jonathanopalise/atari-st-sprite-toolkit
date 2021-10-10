@@ -89,10 +89,10 @@ $typeDefinitions = [
 ];
 
 $scaleFactors = [];
-$currentScaleFactor = 255;
+$currentScaleFactor = 31;
 for ($index = 0; $index < 8; $index++) {
     $scaleFactors[] = $currentScaleFactor;
-    $currentScaleFactor -= 32;
+    $currentScaleFactor += 32;
 }
 
 $indexedBitmap = IndexedBitmap::loadGif($inputFilename);
