@@ -131,8 +131,8 @@ class IndexedBitmap {
             for ($x = 0; $x < $width; $x++) {
                 $pixelIndex = imagecolorat($image, $x, $y);
 
-                $visible = $pixelIndex == $transparentIndex;
-                if ($visible) {
+                $visible = $pixelIndex != $transparentIndex;
+                if (!$visible) {
                     $pixelIndex = 0;
                 }
 

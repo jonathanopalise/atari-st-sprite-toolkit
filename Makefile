@@ -5,7 +5,7 @@ VASM_OPTS = -no-opt
 VLINK = vlink
 PHP = php
 
-OBJECT_FILES = src/demo.o src/blitter_sprites.o src/mega_man.o src/generated/palette.o
+OBJECT_FILES = src/demo.o src/blitter_sprites.o src/generated/palette.o src/generated/ground_sprites.o
 
 bin/demo.prg: $(OBJECT_FILES)
 	$(CC) -o src/demo.elf libcxx/brownboot.o libcxx/browncrti.o libcxx/browncrtn.o libcxx/browncrt++.o libcxx/zerolibc.o libcxx/zerocrtfini.o $(OBJECT_FILES) -O3 -Wl,--emit-relocs -Wl,-e_start -Ttext=0 -nostartfiles -m68000 -Ofast -fomit-frame-pointer -D__ATARI__ -D__M68000__ -DELF_CONFIG_STACK=1024 -fstrict-aliasing -fcaller-saves -flto -ffunction-sections -fdata-sections -fleading-underscore
@@ -18,14 +18,14 @@ src/demo.o: src/demo.c src/blitter_sprites.o
 src/blitter_sprites.o: src/blitter_sprites.s src/blitter_sprites.h
 	$(VASM) $(VASM_OPTS) src/blitter_sprites.s -Felf -o src/blitter_sprites.o
 
-src/mega_man.o: src/mega_man.s
-	$(VASM) $(VASM_OPTS) src/mega_man.s -Felf -o src/mega_man.o
+src/generated/ground_sprites.o: src/generated/ground_sprites.c src/ground_sprites.h
+	$(CC) $(CFLAGS) -c src/generated/ground_sprites.c -o src/generated/ground_sprites.o
+
+src/generated/ground_sprites.c: src/generate_ground_sprites.php assets/pdrift.gif src/ground_sprites_template.php
+	$(PHP) src/generate_ground_sprites.php assets/pdrift.gif src/generated/ground_sprites.c
 
 src/generated/palette.o: src/generated/palette.s
 	$(VASM) $(VASM_OPTS) src/generated/palette.s -Felf -o src/generated/palette.o
 
 src/generated/palette.s: megaman.data.pal src/generate_palette.php
 	$(PHP) src/generate_palette.php megaman.data.pal src/generated/palette.s
-
-src/mega_man.s: megaman.data src/generate_mega_man.php src/library.php
-	php src/generate_mega_man.php

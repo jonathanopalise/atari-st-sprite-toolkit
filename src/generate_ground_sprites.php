@@ -99,6 +99,8 @@ $indexedBitmap = IndexedBitmap::loadGif($inputFilename);
 
 $types = [];
 foreach ($typeDefinitions as $typeDefinition) {
+    echo("generating data for sprite '".$typeDefinition['label']."'...\n");
+
     $typeIndexedBitmap = $indexedBitmap->extractRegionToIndexedBitmap(
         $typeDefinition['left'],
         $typeDefinition['top'],
@@ -127,9 +129,12 @@ foreach ($typeDefinitions as $typeDefinition) {
             'source_data_height' => $maskedSprite->getHeight(),
             'words' => $planarData->getWords(),
         ];
+
+        $sprites[] = $sprite;
     }
 
     $type = [
+        'label' => $typeDefinition['label'],
         'number_of_sizes' => count($scaleFactors),
         'sprites' => $sprites,
     ];
@@ -137,4 +142,9 @@ foreach ($typeDefinitions as $typeDefinition) {
     $types[] = $type;
 }
 
-var_dump($types);
+ob_start();
+require('ground_sprites_template.php');
+$output = ob_get_clean();
+
+file_put_contents($outputFilename, $output);
+

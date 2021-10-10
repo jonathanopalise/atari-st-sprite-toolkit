@@ -4,7 +4,7 @@
 #include <mint/sysbind.h>
 #include <string.h>
 #include "blitter_sprites.h"
-#include "mega_man.h"
+#include "ground_sprites.h"
 #include "palette.h"
 
 void main_supervisor() {
@@ -22,7 +22,7 @@ void main_supervisor() {
     //draw_sprite(260,140,(void *)mega_man,112,98,(void *)physBase);
     //draw_sprite(80,60,(void *)mega_man,112,98,(void *)physBase);
     //for (int index = 0; index<250; index+=10) {
-        draw_sprite(20,20,(void *)mega_man,128,120,physBase);
+    //draw_sprite(20,20,(void *)mega_man,128,120,physBase);
     //    draw_sprite(index,60,(void *)mega_man,112,98,physBase);
     //    draw_sprite(index,100,(void *)mega_man,112,98,physBase);
     //    draw_sprite(index,140,(void *)mega_man,112,98,physBase);
