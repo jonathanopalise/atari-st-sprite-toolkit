@@ -11,26 +11,26 @@ function generateSteNibble($value)
     return (($amigaNibble >> 1) | (($amigaNibble & 1) << 3));
 }
 
-$rgbPalette = file_get_contents($argv[1]);
-if (strlen($rgbPalette) != 48) {
-    echo("palette file needs to be exactly 48 bytes");
+$image = imagecreatefromgif($argv[1]);
+if ($image === false) {
+    echo("unable to open palette\n");
     exit(1);
 }
 
+
 $stePalette = [];
-$offset = 0;
 for ($index = 0; $index < 16; $index++) {
-    $red = ord($rgbPalette[$offset]);
-    $green = ord($rgbPalette[$offset+1]);
-    $blue = ord($rgbPalette[$offset+2]);
+    $colours = imagecolorsforindex($image, $index);
+
+    $red = $colours['red'];
+    $green = $colours['green'];
+    $blue = $colours['blue'];
 
     $steRed = generateSteNibble($red);
     $steGreen = generateSteNibble($green);
     $steBlue = generateSteNibble($blue);
 
     $stePalette[] = ($steRed << 8) | ($steGreen << 4) | ($steBlue);
-
-    $offset += 3;
 }
 
 $identifier = '_palette';

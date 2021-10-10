@@ -14,10 +14,4 @@ typedef struct {
     ground_sprite *ground_sprites;
 } ground_sprite_type;
 
-typedef struct {
-    int16_t number_of_elements;
-} test_struct_type;
-
-extern test_struct_type foods[];
-
 extern ground_sprite_type ground_sprite_types[];

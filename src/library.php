@@ -137,7 +137,7 @@ class IndexedBitmap {
                 }
 
                 $line->addPixel(
-                    new IndexedBitmapPixel($pixelIndex, $visible)
+                    new IndexedBitmapPixel($pixelIndex, !$visible)
                 );
             }
             $lines[] = $line;
