@@ -240,7 +240,7 @@ class IndexedBitmap {
             $lines[] = $lineClone;
         }
 
-        return new static($lines);
+        return new static($lines, $this->originX, $this->originY);
     }
 
     public function matchesDimensionsOf(IndexedBitmap $indexedBitmap)
