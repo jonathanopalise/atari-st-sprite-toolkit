@@ -2,28 +2,16 @@
 
 require_once 'library.php';
 
-if ($argc < 5) {
-    echo("Usage: php generate_ground_sprites.php [inputFile] [inputWidth] [inputHeight] [outputFile]\n");
+if ($argc < 3) {
+    echo("Usage: php generate_ground_sprites.php [inputFile] [outputFile]\n");
     exit(1);
 }
 
 $inputFilename = $argv[1];
-$inputWidthString = $argv[2];
-$inputHeightString = $argv[3];
-$outputFilename = $argv[4];
+$outputFilename = $argv[2];
 
 if (!file_exists($inputFilename)) {
     echo("Input filename does not exist\n");
-    exit(1);
-}
-
-if (!ctype_digit($inputWidthString)) {
-    echo("Input width must be numeric\n");
-    exit(1);
-}
-
-if (!ctype_digit($inputHeightString)) {
-    echo("Input height must be numeric\n");
     exit(1);
 }
 
@@ -107,11 +95,7 @@ for ($index = 0; $index < 8; $index++) {
     $currentScaleFactor -= 32;
 }
 
-$indexedBitmap = IndexedBitmap::load(
-    $inputFilename,
-    intval($inputWidthString),
-    intval($inputHeightString)
-);
+$indexedBitmap = IndexedBitmap::loadGif($inputFilename);
 
 $types = [];
 foreach ($typeDefinitions as $typeDefinition) {

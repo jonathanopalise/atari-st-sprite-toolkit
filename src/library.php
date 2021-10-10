@@ -113,29 +113,32 @@ class IndexedBitmap {
         $this->originY = $originY;
     }
 
-    public static function load($filename, $width, $height)
+    public static function loadGif($filename)
     {
-        $contents = file_get_contents($filename);
-        if ($contents === false) {
+        $image = imagecreatefromgif($filename);
+        if ($image === false) {
             throw new RuntimeException('failed to open file ' . $filename);
         }
 
-        $expectedLength = $width * $height * 2;
-        if (strlen($contents) != $expectedLength) {
-            throw new RuntimeException('raw image data is not expected length of ' . $expectedLength);
-        }
+        $width = imagesx($image);
+        $height = imagesy($image);
+
+        $transparentIndex = imagecolortransparent($image);
 
         $lines = [];
-        $offset = 0;
         for ($y = 0; $y < $height; $y++) {
             $line = new IndexedBitmapLine();
             for ($x = 0; $x < $width; $x++) {
-                $pixelIndex = ord($contents[$offset]);
-                $visible = ord($contents[$offset+1]) == 0xff ? false: true;
+                $pixelIndex = imagecolorat($image, $x, $y);
+
+                $visible = $pixelIndex == $transparentIndex;
+                if ($visible) {
+                    $pixelIndex = 0;
+                }
+
                 $line->addPixel(
                     new IndexedBitmapPixel($pixelIndex, $visible)
                 );
-                $offset += 2;
             }
             $lines[] = $line;
         }
