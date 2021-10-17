@@ -181,20 +181,60 @@ class PointCollection
             }
         }
 
-        $this->points = $point;
+        $this->points = $points;
     }
 
-    public function realignToBoundingBox($x1, $y1, $x2, $y2)
+    public function getRealignedToBoundingBox($desiredMinX, $desiredMinY, $desiredMaxX, $desiredMaxY)
     {
-        $minX = null;
-        $maxX = null;
-        $mixY = null;
-        $maxY = null;
+        $actualMinX = null;
+        $actualMaxX = null;
+        $actualMinY = null;
+        $actualMaxY = null;
 
         foreach ($this->points as $point) {
             $pointX = $point->getX();
             $pointY = $point->getY();
+
+            if (is_null($actualMinX) || $pointX < $actualMinX) {
+                $actualMinX = $pointX;
+            }
+
+            if (is_null($actualMaxX) || $pointX > $actualMaxX) {
+                $actualMaxX = $pointX;
+            }
+
+            if (is_null($actualMinY) || $pointY < $actualMinY) {
+                $actualMinY = $pointY;
+            }
+
+            if (is_null($actualMaxY) || $pointY > $actualMaxY) {
+                $actualMaxY = $pointY;
+            }
         }
+
+        echo("actualMinX: ".$actualMinX."\n");
+        echo("actualMaxX: ".$actualMaxX."\n");
+        echo("actualMinY: ".$actualMinY."\n");
+        echo("actualMaxY: ".$actualMaxY."\n");
+
+        $desiredWidth = $desiredMaxX - $desiredMinX;
+        $desiredHeight = $desiredMaxY - $desiredMinY;
+
+        $actualWidth = $actualMaxX - $actualMinX;
+        $actualHeight = $actualMaxY - $actualMinY;
+
+        $newPoints = [];
+        foreach ($this->points as $point) {
+            $fractionX = ($point->getX() - $actualMinX) / $actualWidth;
+            $fractionY = ($point->getY() - $actualMinY) / $actualHeight;
+
+            $newX = $desiredMinX + ($desiredWidth * $fractionX);
+            $newY = $desiredMinY + ($desiredHeight * $fractionY);
+
+            $newPoints[] = new Point2d($newX, $newY);
+        }
+
+        return $newPoints;
     }
 
     public function getPoints()
@@ -373,9 +413,13 @@ foreach ($cubicBezierSequencePoints as $point) {
 
 $evenlySpacedPoints = $segmentSequence->deriveEvenlySpacedPoints(6);
 
+$pointCollection = new PointCollection($evenlySpacedPoints);
+$realignedPoints = $pointCollection->getRealignedToBoundingBox(-16380, -16380, 16380, 16380);
+
 //var_dump($evenlySpacedPoints);
 
-foreach ($evenlySpacedPoints as $point) {
+foreach ($realignedPoints as $point) {
     echo($point->getx() . " " . $point->getY() . "\n");
 }
+
 
