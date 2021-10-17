@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<inttypes.h>
-
+#include "transform_rotate.h"
 
 /*
 
@@ -63,26 +63,6 @@ int16_t fixed_div_16(int16_t x, int16_t y)
     return ((int32_t)x * (1 << 8)) / y;
 }*/
 
-typedef struct {
-    uint16_t world_x;
-    uint16_t world_y;
-    uint16_t world_z;
-    uint16_t type;
-    int16_t transformed_world_x;
-    int16_t transformed_world_y;
-    int16_t transformed_world_z;
-    int16_t screen_x;
-    int16_t screen_y;
-} Entity;
-
-typedef struct {
-    uint16_t camera_world_x;
-    uint16_t camera_world_y;
-    uint16_t camera_world_z;
-    uint16_t entity_count;
-    Entity *entities;
-} World;
-
 int16_t fixed_mul_6_10(int16_t x, int16_t y)
 {
     return ((int32_t)x * (int32_t)y) / (1 << 10);
@@ -93,9 +73,11 @@ int16_t fixed_div_6_10(int16_t x, int16_t y)
     return ((int32_t)x * (1 << 10)) / y;
 }
 
-void transform_and_rotate_all_entities(World *world, sint16_t *sin, sint16_t *cos)
+void transform_and_rotate_all_entities(World *world, int16_t *sin, int16_t *cos)
 {
-    Camera *camera = world->camera;
+    int16_t entity_world_x;
+    int16_t entity_world_z;
+
     Entity *entity = world->entities;
 
     for (int index = 0; index < world->entity_count; index++) {
@@ -106,19 +88,17 @@ void transform_and_rotate_all_entities(World *world, sint16_t *sin, sint16_t *co
         entity_world_x = entity->transformed_world_x;
         entity_world_z = entity->transformed_world_z;
 
-        entity->transformed_world_x = fixed_mul_6_10(entity_world_x,cos[camera->yaw]) - fixed_mul_6_10(entity_world_z,sin[camera->yaw]);
-        entity->transformed_world_z = fixed_mul_6_10(entity_world_z,cos[camera->yaw]) + fixed_mul_6_10(entity_world_x,sin[camera->yaw]);
+        entity->transformed_world_x = fixed_mul_6_10(entity_world_x,cos[world->camera_yaw]) - fixed_mul_6_10(entity_world_z,sin[world->camera_yaw]);
+        entity->transformed_world_z = fixed_mul_6_10(entity_world_z,cos[world->camera_yaw]) + fixed_mul_6_10(entity_world_x,sin[world->camera_yaw]);
 
         entity++;
     }
 }
 
-void determine_and_project_visible_objects()
+/*void determine_and_project_visible_objects()
 {
-}
+}*/
 
-int main(int argc, char **argv)
-{
     // 6.10 fixed point
     // 000000 / 0000000000
     // integer: -32 to 31
@@ -127,17 +107,17 @@ int main(int argc, char **argv)
     //
 
     // x = 12.5 : (12 << 10) + 512 : 12800
-    int x = (12 << 10) + 512;
+    //int x = (12 << 10) + 512;
     // y = 1.5 : (1 << 10) + 512 : 1536
-    int y = (1 << 10) + 512;
+    //int y = (1 << 10) + 512;
     // expected: 18432 + 768 : 19200
 
-    printf(
+    /*printf(
         "%d divided by %d = %d\n",
         x,
         y,
         fixed_mul_6_10(x,y)
-    );
+    );*/
 
     // rotation:
     //
@@ -185,4 +165,3 @@ int main(int argc, char **argv)
     // sin and cos go from -1 to 1
     //
     // how does all this work with signed values?
-}
