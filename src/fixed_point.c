@@ -1,6 +1,58 @@
 #include<stdio.h>
 #include<inttypes.h>
 
+
+/*
+
+    need a struct that describes the camera:
+
+    CAMERA
+    int16_t world_x;
+    int16_t world_y;
+    int16_t world_z;
+    int16_t pitch; // look up and down
+    int16_t yaw; // look left and right
+
+    need a struct that describes the environment:
+
+    ENTITY
+    int16_t world_x;
+    int16_t world_y;
+    int16_t world_z;
+    int16_t transformed_world_x;
+    int16_t transformed_world_y;
+    int16_t transformed_world_z;
+    int16_t screen_x;
+    int16_t screen_y;
+    uint16_t type;
+
+    need to somehow make sure that the points in the track are accessible to game logic
+    as we'll need them to move around the track
+
+    what if we just hold the count of track points and have the track points first in the points list?
+
+    need sin/cos tables with 256 entries
+
+    just get it working initially:
+    - transform world coordinates to camera coordinates (WATCH OUT FOR OVERFLOW!)
+    - rotate world coordinates to camera coordinates (initially just use yaw)
+        - newX = x * cos(angle) - z * sin(angle)
+        - newZ = z * cos(angle) + x * sin(angle)
+        - so if camera_x = 4000 and entity_x = 6000, transformed_entity_x should be 2000
+            - for all entities:
+                - entity->transformed_world_x = entity->world_x - camera->world_x
+                - entity->transformed_world_y = entity->world_y - camera->world_y
+                - entity->transformed_world_z = entity->world_z - camera->world_z
+                - entity_world_x = entity->transformed_world_x
+                - entity_world_z = entity->transformed_world_z
+                - entity->transformed_world_x = fixed_mul_6_10(entity_world_x,cos[camera->yaw]) - fixed_mul_6_10(entity_world_z,sin[camera->yaw]);
+                - entity->transformed_world_z = fixed_mul_6_10(entity_world_z,cos[camera->yaw]) + fixed_mul_6_10(entity_world_x,sin[camera->yaw]);
+    - create list of pointers to visible objects where z > 0 (each entry is a pointer to an ENTITY)
+        - for all entities
+    - sort list of pointers by Z
+    - for all visible objects, generate screen_x and screen_y and then draw
+*/
+
 /*int16_t fixed_mul_16(int16_t x, int16_t y)
 {
     return ((int32_t)x * (int32_t)y) / (1 << 8);
@@ -10,6 +62,26 @@ int16_t fixed_div_16(int16_t x, int16_t y)
 {
     return ((int32_t)x * (1 << 8)) / y;
 }*/
+
+typedef struct {
+    uint16_t world_x;
+    uint16_t world_y;
+    uint16_t world_z;
+    uint16_t type;
+    int16_t transformed_world_x;
+    int16_t transformed_world_y;
+    int16_t transformed_world_z;
+    int16_t screen_x;
+    int16_t screen_y;
+} Entity;
+
+typedef struct {
+    uint16_t camera_world_x;
+    uint16_t camera_world_y;
+    uint16_t camera_world_z;
+    uint16_t entity_count;
+    Entity *entities;
+} World;
 
 int16_t fixed_mul_6_10(int16_t x, int16_t y)
 {
@@ -21,6 +93,29 @@ int16_t fixed_div_6_10(int16_t x, int16_t y)
     return ((int32_t)x * (1 << 10)) / y;
 }
 
+void transform_and_rotate_all_entities(World *world, sint16_t *sin, sint16_t *cos)
+{
+    Camera *camera = world->camera;
+    Entity *entity = world->entities;
+
+    for (int index = 0; index < world->entity_count; index++) {
+        entity->transformed_world_x = entity->world_x - world->camera_world_x;
+        entity->transformed_world_y = entity->world_y - world->camera_world_y;
+        entity->transformed_world_z = entity->world_z - world->camera_world_z;
+
+        entity_world_x = entity->transformed_world_x;
+        entity_world_z = entity->transformed_world_z;
+
+        entity->transformed_world_x = fixed_mul_6_10(entity_world_x,cos[camera->yaw]) - fixed_mul_6_10(entity_world_z,sin[camera->yaw]);
+        entity->transformed_world_z = fixed_mul_6_10(entity_world_z,cos[camera->yaw]) + fixed_mul_6_10(entity_world_x,sin[camera->yaw]);
+
+        entity++;
+    }
+}
+
+void determine_and_project_visible_objects()
+{
+}
 
 int main(int argc, char **argv)
 {
@@ -46,8 +141,8 @@ int main(int argc, char **argv)
 
     // rotation:
     //
-    // newX = x * cos(angle) - y * sin(angle)
-    // newY = y * cos(angle) + x * sin(angle)
+    // newX = x * cos(angle) - z * sin(angle)
+    // newZ = z * cos(angle) + x * sin(angle)
 
     // projection:
     // 

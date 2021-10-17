@@ -5,7 +5,7 @@ VASM_OPTS = -no-opt
 VLINK = vlink
 PHP = php
 
-OBJECT_FILES = src/demo.o src/blitter_sprites.o src/generated/palette.o src/generated/ground_sprites.o
+OBJECT_FILES = src/demo.o src/blitter_sprites.o src/generated/palette.o src/generated/ground_sprites.o src/generated/sin_cos.o
 ASSETS_GIF = assets/pdrift.gif
 
 bin/demo.prg: $(OBJECT_FILES)
@@ -24,6 +24,12 @@ src/generated/ground_sprites.o: src/generated/ground_sprites.c src/ground_sprite
 
 src/generated/ground_sprites.c: src/generate_ground_sprites.php $(ASSETS_GIF) src/ground_sprites_template.php src/library.php
 	$(PHP) src/generate_ground_sprites.php assets/pdrift.gif src/generated/ground_sprites.c
+
+src/generated/sin_cos.o: src/generated/sin_cos.c src/sin_cos.h
+	$(CC) $(CFLAGS) -c src/generated/sin_cos.c -o src/generated/sin_cos.o
+
+src/generated/sin_cos.c: src/generate_sin_cos.php
+	$(PHP) src/generate_sin_cos.php src/generated/sin_cos.c
 
 src/generated/palette.o: src/generated/palette.s
 	$(VASM) $(VASM_OPTS) src/generated/palette.s -Felf -o src/generated/palette.o

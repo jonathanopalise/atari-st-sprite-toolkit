@@ -6,6 +6,7 @@
 #include "blitter_sprites.h"
 #include "ground_sprites.h"
 #include "palette.h"
+#include "sin_cos.h"
 
 void draw_ground_sprite(uint16_t sprite_index, int16_t xpos, int16_t ypos, uint16_t desired_scale_factor, void *screenBuffer)
 {

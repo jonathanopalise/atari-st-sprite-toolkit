@@ -169,6 +169,40 @@ class SegmentSequence
     }
 }
 
+class PointCollection
+{
+    private $points;
+
+    public function __construct(array $points)
+    {
+        foreach ($points as $point) {
+            if (!$point instanceof Point2d) {
+                throw new RuntimeException('Unexpected type in array');
+            }
+        }
+
+        $this->points = $point;
+    }
+
+    public function realignToBoundingBox($x1, $y1, $x2, $y2)
+    {
+        $minX = null;
+        $maxX = null;
+        $mixY = null;
+        $maxY = null;
+
+        foreach ($this->points as $point) {
+            $pointX = $point->getX();
+            $pointY = $point->getY();
+        }
+    }
+
+    public function getPoints()
+    {
+        return $this->points;
+    }
+}
+
 class CubicBezier
 {
     private $point1;

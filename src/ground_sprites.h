@@ -1,3 +1,6 @@
+#ifndef __GROUND_SPRITES_H
+#define __GROUND_SPRITES_H
+
 #include<inttypes.h>
 
 typedef struct {
@@ -15,3 +18,6 @@ typedef struct {
 } ground_sprite_type;
 
 extern ground_sprite_type ground_sprite_types[];
+
+#endif
+ 
