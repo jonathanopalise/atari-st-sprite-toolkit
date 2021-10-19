@@ -50,6 +50,14 @@ void framebuffer_flip() {
     Setscreen(logBase,physBase,-1);
 }
 
+int compare_function(const void *entity1, const void *entity2)
+{
+    const Entity *entity1_ = *(const Entity **)entity1;
+    const Entity *entity2_ = *(const Entity **)entity2;
+
+    return entity2_->transformed_world_z - entity1_->transformed_world_z;
+}
+
 void main_supervisor() {
     initialise();
     framebuffer_open();
@@ -147,6 +155,8 @@ void main_supervisor() {
             entity++;
         }
 
+        qsort(visible_entity_pointers,visible_entity_count,sizeof(Entity *),compare_function);
+
         current_visible_entity_pointer = visible_entity_pointers;
         for (index=0; index<visible_entity_count; index++) {
             entity = *current_visible_entity_pointer;
@@ -180,14 +190,6 @@ void main_supervisor() {
 
         framebuffer_flip();
     }
-}
-
-int compare_function(const void *entity1, const void *entity2)
-{
-    const Entity *entity1_ = *(const Entity **)entity1;
-    const Entity *entity2_ = *(const Entity **)entity2;
-
-    return(entity1_->transformed_world_z > entity2_->transformed_world_z);
 }
 
 int main(int argc, char **argv)
