@@ -2,10 +2,11 @@
 #define __TRANSFORM_ROTATE_H
 
 typedef struct {
-    uint16_t world_x;
-    uint16_t world_y;
-    uint16_t world_z;
-    uint16_t type;
+    int16_t world_x;
+    int16_t world_y;
+    int16_t world_z;
+    uint16_t type; // log or scenery
+    uint16_t appearance; // log appearance or scenery id
     int16_t transformed_world_x;
     int16_t transformed_world_y;
     int16_t transformed_world_z;
@@ -18,6 +19,7 @@ typedef struct {
     uint16_t camera_world_y;
     uint16_t camera_world_z;
     int16_t camera_yaw;
+    uint16_t log_count;
     uint16_t entity_count;
     Entity *entities;
 } World;

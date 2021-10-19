@@ -1,6 +1,6 @@
 <?php
 
-class Point2d
+class Point
 {
     private $x;
     private $y;
@@ -21,13 +21,13 @@ class Point2d
         return $this->y;
     }
 
-    public function equals(Point2d $point2d)
+    public function equals(Point $point2d)
     {
         return $this->x == $point2d->getX() &&
             $this->y == $point2d->getY();
     }
 
-    public function interpolateWith(Point2d $point2d, $divisor, $multiplier)
+    public function interpolateWith(Point $point2d, $divisor, $multiplier)
     {
         $x1 = $this->x;
         $y1 = $this->y;
@@ -38,10 +38,10 @@ class Point2d
         $x = $x1 + (($x2 - $x1) * $multiplier / $divisor);
         $y = $y1 + (($y2 - $y1) * $multiplier / $divisor);
 
-        return new Point2d($x, $y);
+        return new Point($x, $y);
     }
 
-    public function getDistanceTo(Point2d $point2d)
+    public function getDistanceTo(Point $point2d)
     {
         $x1 = $this->x;
         $y1 = $this->y;
@@ -53,6 +53,52 @@ class Point2d
         $yDiff = $y2 - $y1;
 
         return sqrt(($xDiff * $xDiff) + ($yDiff * $yDiff));
+    }
+}
+
+class WorldPoint
+{
+    private $point;
+    private $type;
+    private $appearance;
+
+    public function __construct(Point $point, $type, $appearance)
+    {
+        $this->point = $point;
+        $this->type = $type;
+        $this->appearance = $appearance;
+    }
+
+    public function getX()
+    {
+        return $this->point->getX();
+    }
+
+    public function getY()
+    {
+        return $this->point->getY();
+    }
+
+    public function createRelocatedClone($x, $y)
+    {
+        return new self(
+            new Point($x, $y),
+            $this->type,
+            $this->appearance
+        );
+    }
+}
+
+class World
+{
+    private $logCount;
+    private $pointCount;
+
+    public function __construct(array $worldPoints, int $logCount, int $pointCount)
+    {
+        $this->worldPoints = $worldPoints;
+        $this->logCount;
+        $this->pointCount;
     }
 }
 
@@ -105,7 +151,7 @@ class SegmentSequence
     private $distanceAtLastPoint = 0;
     private $lastPointAdded = null;
 
-    public function addPoint(Point2d $point)
+    public function addPoint(Point $point)
     {
         if (is_null($this->lastPointAdded)) {
             $this->lastPointAdded = $point;
@@ -113,9 +159,6 @@ class SegmentSequence
         } else {
             $distanceFromLastPointToThisPoint = $this->lastPointAdded->getDistanceTo($point);
 
-            //var_dump($this->lastPointAdded);
-            //var_dump($point);
-            //echo("distance between points: " . $distanceFromLastPointToThisPoint . "\n");
             $newDistanceAtLastPoint = $this->distanceAtLastPoint + $distanceFromLastPointToThisPoint;
 
             $this->segments[] = new Segment(
@@ -134,11 +177,9 @@ class SegmentSequence
     {
         $currentPointDistance = 0;
         $totalDistance = $this->getTotalDistance();
-        //echo("total distance = " . $totalDistance);
         $points = [];
 
         while ($currentPointDistance < $totalDistance) {
-            //echo("get point at distance for ".$currentPointDistance."\n");
             $points[] = $this->getPointAtDistance($currentPointDistance);
             $currentPointDistance += $distanceBetweenPoints;
         }
@@ -176,7 +217,7 @@ class PointCollection
     public function __construct(array $points)
     {
         foreach ($points as $point) {
-            if (!$point instanceof Point2d) {
+            if (!$point instanceof WorldPoint) {
                 throw new RuntimeException('Unexpected type in array');
             }
         }
@@ -212,11 +253,6 @@ class PointCollection
             }
         }
 
-        echo("actualMinX: ".$actualMinX."\n");
-        echo("actualMaxX: ".$actualMaxX."\n");
-        echo("actualMinY: ".$actualMinY."\n");
-        echo("actualMaxY: ".$actualMaxY."\n");
-
         $desiredWidth = $desiredMaxX - $desiredMinX;
         $desiredHeight = $desiredMaxY - $desiredMinY;
 
@@ -231,7 +267,7 @@ class PointCollection
             $newX = $desiredMinX + ($desiredWidth * $fractionX);
             $newY = $desiredMinY + ($desiredHeight * $fractionY);
 
-            $newPoints[] = new Point2d($newX, $newY);
+            $newPoints[] = $point->createRelocatedClone($newX, $newY);
         }
 
         return $newPoints;
@@ -250,7 +286,7 @@ class CubicBezier
     private $controlPoint2;
     private $point2;
 
-    public function __construct(Point2d $point1, Point2d $controlPoint1, Point2d $controlPoint2, Point2d $point2)
+    public function __construct(Point $point1, Point $controlPoint1, Point $controlPoint2, Point $point2)
     {
         $this->point1 = $point1;
         $this->controlPoint1 = $controlPoint1;
@@ -277,7 +313,7 @@ class CubicBezier
         $x = $t3*$x4 + (3*$t2 - 3*$t3)*$x3 + (3*$t3 - 6*$t2 + 3*$t)*$x2 + (3*$t2 - $t3 - 3*$t + 1)*$x1;
         $y = $t3*$y4 + (3*$t2 - 3*$t3)*$y3 + (3*$t3 - 6*$t2 + 3*$t)*$y2 + (3*$t2 - $t3 - 3*$t + 1)*$y1;
 
-        return new Point2d($x, $y);
+        return new Point($x, $y);
     }
 }
 
@@ -306,120 +342,168 @@ class CubicBezierSequence
     }
 }
 
-$curveString = "M 148.77622,29.514983 C 204.17256,29.873562 255.69519,30.375218 315.74697,30.532383 344.89726,30.608673 367.05072,61.673071 353.02148,85.939157 328.06032,129.11399 297.50343,185.55801 267.32408,239.04748 258.49945,254.68813 218.04447,254.43144 204.02282,239.82166 191.79173,227.07753 185.741,208.79634 197.36226,188.54232 202.202,180.10741 210.9043,172.53939 219.88298,168.80387 230.90106,164.21987 240.92849,166.31332 249.84883,162.58527 259.33582,158.6204 268.22701,144.02522 268.17685,133.59827 268.10685,119.04062 249.74406,104.05326 234.87703,103.92459 204.1181,103.65838 180.05052,104.93165 145.51193,104.64835 128.62736,104.50986 109.54457,82.289178 109.59593,65.095804 109.64503,48.644448 129.06092,29.387366 148.77622,29.514983 Z";
+class CurveStringParser
+{
+    public function deriveCubicBezierSequence(string $curveString)
+    {
+        $explodedCurveStringElements = explode(' ', $curveString);
 
-/*$curveString = "
-148.77622,29.514983 <-
-204.17256,29.873562
-255.69519,30.375218
-315.74697,30.532383 <-
-344.89726,30.608673
-367.05072,61.673071
-353.02148,85.939157 <-
-328.06032,129.11399
-297.50343,185.55801
-267.32408,239.04748 <-
-258.49945,254.68813
-218.04447,254.43144
-204.02282,239.82166 <-
-191.79173,227.07753
-185.741,208.79634
-197.36226,188.54232 <-
-202.202,180.10741
-210.9043,172.53939
-219.88298,168.80387 <-
-230.90106,164.21987
-240.92849,166.31332
-249.84883,162.58527 <-
-259.33582,158.6204
-268.22701,144.02522
-268.17685,133.59827 <-
-268.10685,119.04062
-249.74406,104.05326
-234.87703,103.92459 <-
-204.1181,103.65838
-180.05052,104.93165
-145.51193,104.64835 <-
-128.62736,104.50986
-109.54457,82.289178
-109.59593,65.095804 <-
-109.64503,48.644448
-129.06092,29.387366
-148.77622,29.514983 <- ";*/
+        $coordinates = [];
+        foreach ($explodedCurveStringElements as $potentialCoordinatePair) {
+            $potentialCoordinatePairElements = explode(',', $potentialCoordinatePair);
+            if (count($potentialCoordinatePairElements) == 2) {
+                $potentialXCoordinate = $potentialCoordinatePairElements[0];
+                $potentialYCoordinate = $potentialCoordinatePairElements[1];
 
+                if (is_numeric($potentialXCoordinate) && is_numeric($potentialYCoordinate)) {
+                    $coordinates[] = new Point(
+                        floatval($potentialXCoordinate),
+                        floatval($potentialYCoordinate)
+                    );
+                }
+            }
+        }
 
-$explodedCurveStringElements = explode(' ', $curveString);
+        $coordinatesCount = count($coordinates);
 
-$coordinates = [];
-foreach ($explodedCurveStringElements as $potentialCoordinatePair) {
-    $potentialCoordinatePairElements = explode(',', $potentialCoordinatePair);
-    if (count($potentialCoordinatePairElements) == 2) {
-        $potentialXCoordinate = $potentialCoordinatePairElements[0];
-        $potentialYCoordinate = $potentialCoordinatePairElements[1];
+        if (count($coordinates) == 0) {
+            throw new RuntimeException('No coordinates detected');
+        }
 
-        if (is_numeric($potentialXCoordinate) && is_numeric($potentialYCoordinate)) {
-            $coordinates[] = new Point2d(
-                floatval($potentialXCoordinate),
-                floatval($potentialYCoordinate)
+        if (!($coordinates[0]->equals($coordinates[$coordinatesCount-1]))) {
+            throw new RuntimeException('coordinates do not form a loop');
+        }
+
+        if ($coordinatesCount % 3 != 1) {
+            throw new RuntimeException('number of coordinates is not as expected');
+        }
+
+        $cubicBezierSequence = new CubicBezierSequence();
+
+        $offset = 0;
+        while ($offset < ($coordinatesCount - 2)) {
+            $cubicBezierSequence->addCubicBezier(
+                new CubicBezier(
+                    $coordinates[$offset],
+                    $coordinates[$offset+1],
+                    $coordinates[$offset+2],
+                    $coordinates[$offset+3]
+                )
             );
+            $offset += 3;
+        }
+
+        return $cubicBezierSequence;
+    }
+}
+
+class WorldGenerator
+{
+    public function deriveWorldFromDomDocument(string $filename)
+    {
+        $document = DomDocument::load($filename);
+        if ($document === false) {
+            throw new RuntimeException('Unable to load svg file');
+        }
+
+        $pathElements = $document->getElementsByTagName('path');
+        if (count($pathElements) != 1) {
+            throw new RuntimeException('Zero or more than one path elements found');
+        }
+
+        $curveElement = $pathElements[0];
+        $curveString = $curveElement->getAttribute('d');
+        if ($curveString == '') {
+            throw new RuntimeException('Unable to find track curvature attribute');
+        }
+
+        $curveStringParser = new CurveStringParser();
+        $cubicBezierSequence = $curveStringParser->deriveCubicBezierSequence($curveString);
+
+        $cubicBezierSequencePoints = $cubicBezierSequence->getPoints();
+
+        $segmentSequence = new SegmentSequence();
+        foreach ($cubicBezierSequencePoints as $point) {
+            $segmentSequence->addPoint($point);
+        }
+
+        $evenlySpacedPoints = $segmentSequence->deriveEvenlySpacedPoints(8);
+
+        $worldPoints = [];
+        foreach ($evenlySpacedPoints as $point) {
+            $worldPoints[] = new WorldPoint($point, 'L', 0);
+        }
+
+        $sceneryElements = $document->getElementsByTagName('ellipse');
+        foreach ($sceneryElements as $sceneryElement) {
+            $worldPoints[] = $this->generateSceneryWorldPoint($sceneryElement);
+        }
+
+        $pointCollection = new PointCollection($worldPoints);
+        $realignedPoints = $pointCollection->getRealignedToBoundingBox(-16380, -16380, 16380, 16380);
+
+        /*foreach ($realignedPoints as $point) {
+            echo($point->getx() . " " . $point->getY() . "\n");
+        }*/
+
+        var_dump(count($realignedPoints));
+    }
+
+    private function generateSceneryWorldPoint($element)
+    {
+        $x = $element->getAttribute('cx');
+        $y = $element->getAttribute('cy');
+
+        $appearance = $this->extractAppearanceFromStyle(
+            $element->getAttribute('style')
+        );
+
+        return new WorldPoint(
+            new Point($x, $y),
+            'S',
+            $appearance
+        );
+    }
+
+    private function extractAppearanceFromStyle($style)
+    {
+        $rgbToAppearanceMappings = [
+            '#800000' => 0,
+            '#ff0000' => 1,
+            '#808000' => 2,
+            '#ffff00' => 3,
+            '#008000' => 4,
+            '#00ff00' => 5,
+            '#008080' => 6,
+            '#00ffff' => 7,
+            '#000080' => 8,
+        ];
+
+        $styleElements = explode(';', $style);
+        foreach ($styleElements as $styleElement) {
+            $styleElementElements = explode(':', $styleElement);
+            if (count($styleElementElements) != 2) {
+                throw new RuntimeException('Malformed element within style tag');
+            }
+
+            if ($styleElementElements[0] == 'fill') {
+                $rgb = $styleElementElements[1];
+                if (!isset($rgbToAppearanceMappings[$rgb])) {
+                    throw new RuntimeException('No appearance mapping for ' . $rgb);
+                }
+
+                return $rgbToAppearanceMappings[$rgb];
+            }
         }
     }
 }
 
-$coordinatesCount = count($coordinates);
-
-if (count($coordinates) == 0) {
-    echo("no coordinates detected, exiting\n");
+if ($argc < 2) {
+    echo("usage: generate_palette [inputFile]");
     exit(1);
 }
 
-if (!($coordinates[0]->equals($coordinates[$coordinatesCount-1]))) {
-    echo("coordinates do not form a loop, exiting\n");
-    exit();
-}
+$inputFilename = $argv[1];
+$worldGenerator = new WorldGenerator();
 
-//array_pop($coordinates);
-//var_dump($coordinates);
-$coordinatesCount = count($coordinates);
-
-if ($coordinatesCount % 3 != 1) {
-    echo("number of coordinates is not as expected, exiting\n");
-    exit();
-}
-
-$cubicBezierSequence = new CubicBezierSequence();
-
-$offset = 0;
-while ($offset < ($coordinatesCount - 2)) {
-    $cubicBezierSequence->addCubicBezier(
-        new CubicBezier(
-            $coordinates[$offset],
-            $coordinates[$offset+1],
-            $coordinates[$offset+2],
-            $coordinates[$offset+3]
-        )
-    );
-    $offset += 3;
-}
-
-$cubicBezierSequencePoints = $cubicBezierSequence->getPoints();
-
-$segmentSequence = new SegmentSequence();
-foreach ($cubicBezierSequencePoints as $point) {
-    $segmentSequence->addPoint($point);
-}
-
-//var_dump($segmentSequence);
-
-$evenlySpacedPoints = $segmentSequence->deriveEvenlySpacedPoints(6);
-
-$pointCollection = new PointCollection($evenlySpacedPoints);
-$realignedPoints = $pointCollection->getRealignedToBoundingBox(-16380, -16380, 16380, 16380);
-
-//var_dump($evenlySpacedPoints);
-
-foreach ($realignedPoints as $point) {
-    echo($point->getx() . " " . $point->getY() . "\n");
-}
-
-
+$worldGenerator->deriveWorldFromDomDocument($inputFilename);
