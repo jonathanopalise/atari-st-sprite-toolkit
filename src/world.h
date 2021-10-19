@@ -1,5 +1,7 @@
-#ifndef __TRANSFORM_ROTATE_H
-#define __TRANSFORM_ROTATE_H
+#ifndef __WORLD_H
+#define __WORLD_H
+
+#include <inttypes.h>
 
 typedef struct {
     int16_t world_x;
@@ -24,7 +26,9 @@ typedef struct {
     Entity *entities;
 } World;
 
-void transform_and_rotate_all_entities(World *world, int16_t *sin, int16_t *cos);
+void transform_and_rotate_world(World *world, int16_t *sin, int16_t *cos);
+
+void project_entity(Entity *entity);
 
 #endif
  

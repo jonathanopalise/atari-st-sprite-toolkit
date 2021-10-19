@@ -146,5 +146,9 @@ ob_start();
 require('ground_sprites_template.php');
 $output = ob_get_clean();
 
-file_put_contents($outputFilename, $output);
+$result = file_put_contents($outputFilename, $output);
+if ($result === false) {
+    echo("Unable to write ground sprites data");
+    exit(1);
+}
 
