@@ -7,6 +7,8 @@
 #include "ground_sprites.h"
 #include "palette.h"
 #include "sin_cos.h"
+#include "world.h"
+#include "world_data.h"
 
 void draw_ground_sprite(uint16_t sprite_index, int16_t xpos, int16_t ypos, uint16_t desired_scale_factor, void *screenBuffer)
 {
@@ -35,6 +37,8 @@ void main_supervisor() {
     draw_ground_sprite(5, 220, 180, 176, physBase);
     draw_ground_sprite(6, 260, 180, 208, physBase);
     draw_ground_sprite(7, 300, 180, 240, physBase);
+
+    transform_and_rotate_world(&world, sin_table, cos_table);
 
     while (1) {}
 }

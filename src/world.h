@@ -3,6 +3,9 @@
 
 #include <inttypes.h>
 
+#define ENTITY_TYPE_LOG 0
+#define ENTITY_TYPE_SCENERY 1
+
 typedef struct {
     int16_t world_x;
     int16_t world_y;

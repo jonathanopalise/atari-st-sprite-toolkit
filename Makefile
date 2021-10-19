@@ -5,7 +5,7 @@ VASM_OPTS = -no-opt
 VLINK = vlink
 PHP = php
 
-OBJECT_FILES = src/demo.o src/blitter_sprites.o src/generated/palette.o src/generated/ground_sprites.o src/generated/sin_cos.o src/world.o
+OBJECT_FILES = src/demo.o src/blitter_sprites.o src/generated/palette.o src/generated/ground_sprites.o src/generated/sin_cos.o src/world.o src/generated/world_data.o
 ASSETS_GIF = assets/pdrift.gif
 
 bin/demo.prg: $(OBJECT_FILES)
@@ -27,6 +27,12 @@ src/generated/ground_sprites.o: src/generated/ground_sprites.c src/ground_sprite
 
 src/generated/ground_sprites.c: src/generate_ground_sprites.php $(ASSETS_GIF) src/ground_sprites_template.php src/library.php
 	$(PHP) src/generate_ground_sprites.php assets/pdrift.gif src/generated/ground_sprites.c
+
+src/generated/world_data.o: src/generated/world_data.c src/world.h
+	$(CC) $(CFLAGS) -c src/generated/world_data.c -o src/generated/world_data.o
+
+src/generated/world_data.c: src/generate_world_data.php src/world_data_template.php
+	$(PHP) src/generate_world_data.php assets/pd4.svg src/generated/world_data.c
 
 src/generated/sin_cos.o: src/generated/sin_cos.c src/sin_cos.h
 	$(CC) $(CFLAGS) -c src/generated/sin_cos.c -o src/generated/sin_cos.o

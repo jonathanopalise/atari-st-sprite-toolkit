@@ -1,5 +1,8 @@
 <?php
 
+define('ENTITY_TYPE_LOG', 0);
+define('ENTITY_TYPE_SCENERY', 1);
+
 class Point
 {
     private $x;
@@ -133,7 +136,7 @@ class World
 
     public function getEntityCount()
     {
-        return $this->entityCount;
+        return count($this->entities);
     }
 
     public function getEntities()
@@ -472,7 +475,7 @@ class WorldGenerator
 
         $entities = [];
         foreach ($logPoints as $point) {
-            $entities[] = new Entity($point, 'L', 0);
+            $entities[] = new Entity($point, ENTITY_TYPE_LOG, 0);
         }
 
         $sceneryElements = $document->getElementsByTagName('ellipse');
@@ -507,7 +510,7 @@ class WorldGenerator
 
         return new Entity(
             new Point($x, $y),
-            'S',
+            ENTITY_TYPE_SCENERY,
             $appearance
         );
     }
@@ -557,7 +560,7 @@ $worldGenerator = new WorldGenerator();
 $world = $worldGenerator->deriveWorldFromDomDocument($inputFilename);
 
 ob_start();
-require('world_template.php');
+require('world_data_template.php');
 $output = ob_get_clean();
 
 $result = file_put_contents($outputFilename, $output);
