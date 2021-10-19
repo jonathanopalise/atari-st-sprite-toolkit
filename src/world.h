@@ -20,14 +20,16 @@ typedef struct {
 } Entity;
 
 typedef struct {
-    uint16_t camera_world_x;
-    uint16_t camera_world_y;
-    uint16_t camera_world_z;
+    int16_t camera_world_x;
+    int16_t camera_world_y;
+    int16_t camera_world_z;
     int16_t camera_yaw;
     uint16_t log_count;
     uint16_t entity_count;
     Entity *entities;
 } World;
+
+int16_t fixed_div_6_10(int16_t x, int16_t y);
 
 void transform_and_rotate_world(World *world, int16_t *sin, int16_t *cos);
 

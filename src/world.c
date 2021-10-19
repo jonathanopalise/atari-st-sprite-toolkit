@@ -7,7 +7,7 @@ static int16_t fixed_mul_6_10(int16_t x, int16_t y)
     return ((int32_t)x * (int32_t)y) / (1 << 10);
 }
 
-static int16_t fixed_div_6_10(int16_t x, int16_t y)
+int16_t fixed_div_6_10(int16_t x, int16_t y)
 {
     return ((int32_t)x * (1 << 10)) / y;
 }
