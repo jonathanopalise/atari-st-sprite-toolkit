@@ -470,7 +470,7 @@ class WorldGenerator
             $segmentSequence->addPoint($point);
         }
 
-        $logPoints = $segmentSequence->deriveEvenlySpacedPoints(8);
+        $logPoints = $segmentSequence->deriveEvenlySpacedPoints(2);
         $logCount = count($logPoints);
 
         $entities = [];

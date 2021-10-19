@@ -1,6 +1,6 @@
 <?php
 
-$angleCount = 256;
+$angleCount = 1024;
 $radiansIncrement = (M_PI * 2) / $angleCount;
 
 if ($argc < 2) {

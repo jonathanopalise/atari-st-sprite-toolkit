@@ -61,25 +61,35 @@ void main_supervisor() {
     //draw_ground_sprite(6, 10, 180, 208, physBase);
 
     world.camera_world_x = -14000;
-    world.camera_world_y = -20;
+    world.camera_world_y = -100;
     world.camera_world_z = -14000;
     world.camera_yaw = 0;
 
     Entity *entity;
+    int position;
     int index;
     int size;
     int yaw;
 
     yaw = 0;
+    position = 0;
 
     while (1) {
         memset(logBase, 0, 32000);
+
+        entity = &world.entities[position];
+        world.camera_world_x = entity->world_x;
+        world.camera_world_z = entity->world_z;
+        position++;
+        if (position == world.entity_count) {
+            position=0;
+        }
 
         transform_and_rotate_world(&world, sin_table, cos_table);
 
         entity = world.entities;
         for (index=0; index<world.entity_count; index++) {
-            if (entity->type == ENTITY_TYPE_SCENERY && entity->transformed_world_z > 0 && entity->transformed_world_z < 16384) {
+            if (entity->transformed_world_z > 0 && entity->transformed_world_z < 16384) {
                 project_entity(entity);
 
                 size = fixed_div_6_10(400, entity->transformed_world_z);
@@ -98,17 +108,15 @@ void main_supervisor() {
             entity++;
         }
 
-        yaw++;
-        if (yaw == 16) {
-            world.camera_yaw++;
-            if (world.camera_yaw > 255) {
+        //yaw++;
+        //if (yaw == 4) {
+            /*world.camera_yaw++;
+            if (world.camera_yaw > 1023) {
                 world.camera_yaw = 0;
             }
-            yaw = 0;
-        }
+            yaw = 0;*/
+        //}
 
-        //world.camera_world_x += 20;
-        world.camera_world_z += 20;
         framebuffer_flip();
     }
 }
