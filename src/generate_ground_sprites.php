@@ -108,6 +108,11 @@ $types = [];
 foreach ($typeDefinitions as $typeDefinition) {
     echo("generating data for sprite '".$typeDefinition['label']."'...\n");
 
+    if ($typeDefinition['label'] == 'log') {
+    } else {
+        $originY = $typeDefinition['height'] - 1;
+    }
+
     $typeIndexedBitmap = $indexedBitmap->extractRegionToIndexedBitmap(
         $typeDefinition['left'],
         $typeDefinition['top'],

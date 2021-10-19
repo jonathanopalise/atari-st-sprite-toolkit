@@ -28,6 +28,8 @@ void draw_ground_sprite(uint16_t sprite_index, int16_t xpos, int16_t ypos, uint1
 
 uint16_t *physBase;
 uint16_t *logBase;
+// WARNING: needs to match or exceed entity count!
+Entity *visible_entities[300];
 
 void framebuffer_open() {
     //__asm__ __volatile__("move.w #0x2700,%sr");
@@ -56,6 +58,7 @@ void main_supervisor() {
 	int joyRight;
 
 
+
     memcpy((void *)0xffff8240, palette, 32);
     //uint16_t *physBase;
     //physBase=Physbase();
@@ -69,7 +72,7 @@ void main_supervisor() {
     //draw_ground_sprite(6, 10, 180, 208, physBase);
 
     world.camera_world_x = -100;
-    world.camera_world_y = -100;
+    world.camera_world_y = -500;
     world.camera_world_z = -100;
     world.camera_yaw = 0;
 
@@ -78,6 +81,8 @@ void main_supervisor() {
     int index;
     int size;
     int yaw;
+    uint32_t value;
+    uint32_t *valuePointer;
 
     yaw = 0;
     position = 0;
@@ -88,23 +93,34 @@ void main_supervisor() {
         joyLeft=joy_data&4;
         joyRight=joy_data&8;
 
-        memset(logBase, 0, 32000);
+        //memset(logBase, 0, 32000);
+        valuePointer = logBase;
+        value = 0x0000ffff;
+        for (index = 0; index < 4000; index++) {
+            *valuePointer = value;
+            valuePointer++;
+        }
+        value = 0xffff0000;
+        for (index = 0; index < 4000; index++) {
+            *valuePointer = value;
+            valuePointer++;
+        }
 
         if (joyRight) {
-            world.camera_yaw++;
+            world.camera_yaw+=16;
             if (world.camera_yaw > 1023) {
-                world.camera_yaw = 0;
+                world.camera_yaw -= 1024;
             }
         } else if (joyLeft) {
-            world.camera_yaw--;
+            world.camera_yaw-=16;
             if (world.camera_yaw < 0) {
-                world.camera_yaw = 1023;
+                world.camera_yaw += 1024;
             }
         } 
 
         if (joyUp) {
-            world.camera_world_x += sin_table[world.camera_yaw] / 4;
-            world.camera_world_z += cos_table[world.camera_yaw] / 4;
+            world.camera_world_x += sin_table[world.camera_yaw] / 2;
+            world.camera_world_z += cos_table[world.camera_yaw] / 2;
         }
 
         /*entity = &world.entities[position];
@@ -149,6 +165,14 @@ void main_supervisor() {
 
         framebuffer_flip();
     }
+}
+
+int compare_function(const void *entity1, const void *entity2)
+{
+    const Entity *entity1_ = *(const Entity **)entity1;
+    const Entity *entity2_ = *(const Entity **)entity2;
+
+    return(entity1_->transformed_world_z > entity2_->transformed_world_z);
 }
 
 int main(int argc, char **argv)

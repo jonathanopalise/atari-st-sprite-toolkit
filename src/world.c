@@ -36,7 +36,7 @@ void transform_and_rotate_world(World *world, int16_t *sin, int16_t *cos)
 
 void project_entity(Entity *entity)
 {
-    entity->screen_x = fixed_div_6_10(entity->transformed_world_x, entity->transformed_world_z) + 160;
-    entity->screen_y = fixed_div_6_10(entity->transformed_world_y, entity->transformed_world_z) + 100;
+    entity->screen_x = ((fixed_div_6_10(entity->transformed_world_x, entity->transformed_world_z)) / 3)+ 160;
+    entity->screen_y = ((fixed_div_6_10(entity->transformed_world_y, entity->transformed_world_z)) / 3) + 100;
 }
 
