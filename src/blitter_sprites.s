@@ -73,13 +73,13 @@ _draw_sprite:
 
     moveq.l #0,d1
     move.w 18(a0),d1 ; source_data_width
-    lsr.w #4,d1
+    asr.w #4,d1
     move.l d1,d4
 
     moveq.l #0,d2
     move.w 6(a0),d2 ; xpos
     move.l d2,a3
-    lsr.w #4,d2
+    asr.w #4,d2
 
     moveq.l #0,d3
     move.w 22(a0),d3 ; source_data_height

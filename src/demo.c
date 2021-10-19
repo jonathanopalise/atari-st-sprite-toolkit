@@ -29,18 +29,40 @@ void main_supervisor() {
     uint16_t *physBase;
     physBase=Physbase();
 
-    draw_ground_sprite(0, 20, 180, 16, physBase);
-    draw_ground_sprite(1, 60, 180, 48, physBase);
-    draw_ground_sprite(2, 100, 180, 80, physBase);
-    draw_ground_sprite(3, 140, 180, 112, physBase);
-    draw_ground_sprite(4, 180, 180, 144, physBase);
-    draw_ground_sprite(5, 220, 180, 176, physBase);
-    draw_ground_sprite(6, 260, 180, 208, physBase);
-    draw_ground_sprite(7, 300, 180, 240, physBase);
+    //draw_ground_sprite(0, 20, 180, 16, physBase);
+    //draw_ground_sprite(1, 60, 180, 48, physBase);
+    //draw_ground_sprite(2, 100, 180, 80, physBase);
+    //draw_ground_sprite(3, 140, 180, 112, physBase);
+    //draw_ground_sprite(4, 180, 180, 144, physBase);
+    //draw_ground_sprite(5, 220, 180, 176, physBase);
+    draw_ground_sprite(6, 10, 180, 208, physBase);
 
-    transform_and_rotate_world(&world, sin_table, cos_table);
+    world.camera_world_x = 2000;
+    world.camera_world_y = 100;
+    world.camera_world_z = 2000;
+    world.camera_yaw = 0;
 
-    while (1) {}
+    Entity *entity;
+    int index;
+
+    while (1) {
+        transform_and_rotate_world(&world, sin_table, cos_table);
+
+        entity = world.entities;
+        for (index=0; index<world.entity_count; index++) {
+            if (entity->type == ENTITY_TYPE_SCENERY && entity->transformed_world_z > 0) {
+                project_entity(entity);
+                //draw_ground_sprite(entity->appearance, entity->screen_x, entity->screen_y, 240, physBase);
+            }
+            entity++;
+        }
+
+        /*world.camera_yaw++;
+        if (world.camera_yaw > 255) {
+            world.camera_yaw = 0;
+        }*/
+        world.camera_world_x += 20;
+    }
 }
 
 int main(int argc, char **argv)
