@@ -228,7 +228,7 @@ class IndexedBitmap {
             return new static($this->lines, $this->originX, $this->originY);
         }
 
-        $expectedLineLength = ($firstLineWidth + 16) & 240;
+        $expectedLineLength = ($firstLineWidth + 16) & 0xfff0;
 
         $lines = [];
         foreach ($this->lines as $line) {
@@ -288,7 +288,7 @@ class Bitplane
     public function __construct(array $bits)
     {
         if ((count($bits) & 15) != 0) {
-            throw new RuntimeException('Bit count must be divisible by 16');
+            throw new RuntimeException('Bit count must be divisible by 16 ('.(count($bits) & 15).' found)');
         }
 
         foreach ($bits as $bit) {
@@ -407,7 +407,9 @@ class SpriteLineBuilder
 
     public function __construct(int $width, bool $masked)
     {
+
         if ($width & 15 != 0) {
+            echo("Sprite line width = ".$width."\n");
             throw new RuntimeException('Sprite line width must be divisible by 16');
         }
 

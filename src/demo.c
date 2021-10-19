@@ -9,6 +9,7 @@
 #include "sin_cos.h"
 #include "world.h"
 #include "world_data.h"
+#include "initialise.h"
 
 void draw_ground_sprite(uint16_t sprite_index, int16_t xpos, int16_t ypos, uint16_t desired_scale_factor, void *screenBuffer)
 {
@@ -46,7 +47,14 @@ void framebuffer_flip() {
 }
 
 void main_supervisor() {
+    initialise();
     framebuffer_open();
+
+	int joyUp;
+	int joyDown;
+	int joyLeft;
+	int joyRight;
+
 
     memcpy((void *)0xffff8240, palette, 32);
     //uint16_t *physBase;
@@ -60,9 +68,9 @@ void main_supervisor() {
     //draw_ground_sprite(5, 220, 180, 176, physBase);
     //draw_ground_sprite(6, 10, 180, 208, physBase);
 
-    world.camera_world_x = -14000;
+    world.camera_world_x = -100;
     world.camera_world_y = -100;
-    world.camera_world_z = -14000;
+    world.camera_world_z = -100;
     world.camera_yaw = 0;
 
     Entity *entity;
@@ -75,15 +83,37 @@ void main_supervisor() {
     position = 0;
 
     while (1) {
+        joyUp=joy_data&1; 
+        joyDown=joy_data&2;
+        joyLeft=joy_data&4;
+        joyRight=joy_data&8;
+
         memset(logBase, 0, 32000);
 
-        entity = &world.entities[position];
+        if (joyRight) {
+            world.camera_yaw++;
+            if (world.camera_yaw > 1023) {
+                world.camera_yaw = 0;
+            }
+        } else if (joyLeft) {
+            world.camera_yaw--;
+            if (world.camera_yaw < 0) {
+                world.camera_yaw = 1023;
+            }
+        } 
+
+        if (joyUp) {
+            world.camera_world_x += sin_table[world.camera_yaw] / 4;
+            world.camera_world_z += cos_table[world.camera_yaw] / 4;
+        }
+
+        /*entity = &world.entities[position];
         world.camera_world_x = entity->world_x;
         world.camera_world_z = entity->world_z;
         position++;
         if (position == world.entity_count) {
             position=0;
-        }
+        }*/
 
         transform_and_rotate_world(&world, sin_table, cos_table);
 

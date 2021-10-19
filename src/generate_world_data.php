@@ -470,12 +470,12 @@ class WorldGenerator
             $segmentSequence->addPoint($point);
         }
 
-        $logPoints = $segmentSequence->deriveEvenlySpacedPoints(2);
+        $logPoints = $segmentSequence->deriveEvenlySpacedPoints(4);
         $logCount = count($logPoints);
 
         $entities = [];
         foreach ($logPoints as $point) {
-            $entities[] = new Entity($point, ENTITY_TYPE_LOG, 0);
+            $entities[] = new Entity($point, ENTITY_TYPE_LOG, 10);
         }
 
         $sceneryElements = $document->getElementsByTagName('ellipse');

@@ -86,6 +86,13 @@ $typeDefinitions = [
         'width' => 89,
         'height' => 159,
     ],
+    [
+        'label' => 'log',
+        'left' => 265,
+        'top' => 451,
+        'width' => 241,
+        'height' => 40,
+    ],
 ];
 
 $scaleFactors = [];
@@ -117,6 +124,8 @@ foreach ($typeDefinitions as $typeDefinition) {
 
         $scaledIndexedBitmap = $typeIndexedBitmap->getScaledCopy($scaledWidth, $scaledHeight)
             ->getCopyRoundedTo16PixelDivisibleWidth();
+
+        //echo("Rounded width is ". $scaledIndexedBitmap->getWidth(). "\n");
 
         $maskedSprite = SpriteConvertor::createMaskedSprite($scaledIndexedBitmap);
         $planarData = $maskedSprite->exportToPlanarData();
