@@ -29,7 +29,9 @@ void draw_ground_sprite(uint16_t sprite_index, int16_t xpos, int16_t ypos, uint1
 uint16_t *physBase;
 uint16_t *logBase;
 // WARNING: needs to match or exceed entity count!
-Entity *visible_entities[300];
+Entity *visible_entity_pointers[300];
+Entity **current_visible_entity_pointer;
+int visible_entity_count;
 
 void framebuffer_open() {
     //__asm__ __volatile__("move.w #0x2700,%sr");
@@ -133,25 +135,38 @@ void main_supervisor() {
 
         transform_and_rotate_world(&world, sin_table, cos_table);
 
+        visible_entity_count=0;
         entity = world.entities;
+        current_visible_entity_pointer=visible_entity_pointers;
         for (index=0; index<world.entity_count; index++) {
             if (entity->transformed_world_z > 0 && entity->transformed_world_z < 16384) {
-                project_entity(entity);
-
-                size = fixed_div_6_10(400, entity->transformed_world_z);
-                if (size > 255) {
-                    size = 255;
-                }
-
-                draw_ground_sprite(
-                        entity->appearance,
-                        entity->screen_x,
-                        entity->screen_y,
-                        size,
-                        logBase
-                );
+                *current_visible_entity_pointer=entity;
+                current_visible_entity_pointer++;
+                visible_entity_count++;
             }
             entity++;
+        }
+
+        current_visible_entity_pointer = visible_entity_pointers;
+        for (index=0; index<visible_entity_count; index++) {
+            entity = *current_visible_entity_pointer;
+
+            project_entity(entity);
+
+            size = fixed_div_6_10(400, entity->transformed_world_z);
+            if (size > 255) {
+                size = 255;
+            }
+
+            draw_ground_sprite(
+                    entity->appearance,
+                    entity->screen_x,
+                    entity->screen_y,
+                    size,
+                    logBase
+            );
+
+            current_visible_entity_pointer++; 
         }
 
         //yaw++;
