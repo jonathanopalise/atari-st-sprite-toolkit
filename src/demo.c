@@ -116,7 +116,7 @@ void main_supervisor() {
             valuePointer++;
         }
 
-        if (joyRight) {
+        /*if (joyRight) {
             world.camera_yaw+=16;
             if (world.camera_yaw > 1023) {
                 world.camera_yaw -= 1024;
@@ -126,20 +126,25 @@ void main_supervisor() {
             if (world.camera_yaw < 0) {
                 world.camera_yaw += 1024;
             }
-        } 
+        }*/
 
-        if (joyUp) {
+        /*if (joyUp) {
             world.camera_world_x += sin_table[world.camera_yaw] / 2;
             world.camera_world_z += cos_table[world.camera_yaw] / 2;
-        }
+        }*/
 
-        /*entity = &world.entities[position];
+        entity = &world.entities[position];
         world.camera_world_x = entity->world_x;
         world.camera_world_z = entity->world_z;
+        world.camera_yaw = 1023 - entity->yaw;
+        world.camera_yaw += 768;
+        if (world.camera_yaw > 1023) {
+            world.camera_yaw -= 1024;
+        }
         position++;
-        if (position == world.entity_count) {
+        if (position == world.log_count) {
             position=0;
-        }*/
+        }
 
         transform_and_rotate_world(&world, sin_table, cos_table);
 
@@ -178,15 +183,6 @@ void main_supervisor() {
 
             current_visible_entity_pointer++; 
         }
-
-        //yaw++;
-        //if (yaw == 4) {
-            /*world.camera_yaw++;
-            if (world.camera_yaw > 1023) {
-                world.camera_yaw = 0;
-            }
-            yaw = 0;*/
-        //}
 
         framebuffer_flip();
     }
