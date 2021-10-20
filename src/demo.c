@@ -82,7 +82,7 @@ void main_supervisor() {
     //draw_ground_sprite(6, 10, 180, 208, physBase);
 
     world.camera_world_x = -100;
-    world.camera_world_y = -500;
+    world.camera_world_y = -300;
     world.camera_world_z = -100;
     world.camera_yaw = 0;
 
@@ -147,7 +147,7 @@ void main_supervisor() {
         entity = world.entities;
         current_visible_entity_pointer=visible_entity_pointers;
         for (index=0; index<world.entity_count; index++) {
-            if (entity->transformed_world_z > 0 && entity->transformed_world_z < 16384) {
+            if (entity->transformed_world_z > 100 && entity->transformed_world_z < 16384) {
                 *current_visible_entity_pointer=entity;
                 current_visible_entity_pointer++;
                 visible_entity_count++;

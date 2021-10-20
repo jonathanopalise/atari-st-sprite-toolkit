@@ -109,6 +109,7 @@ foreach ($typeDefinitions as $typeDefinition) {
     echo("generating data for sprite '".$typeDefinition['label']."'...\n");
 
     if ($typeDefinition['label'] == 'log') {
+        $originY = 0;
     } else {
         $originY = $typeDefinition['height'] - 1;
     }
@@ -119,7 +120,7 @@ foreach ($typeDefinitions as $typeDefinition) {
         $typeDefinition['width'],
         $typeDefinition['height'],
         intval($typeDefinition['width'] / 2),
-        $typeDefinition['height'] - 1
+        $originY
     );
 
     $sprites = [];

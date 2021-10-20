@@ -55,6 +55,8 @@ class Point
         $xDiff = $x2 - $x1;
         $yDiff = $y2 - $y1;
 
+        echo("[x1 = ".$x1.", y1 = ".$y1.", x2 = ".$x2.", y2 = ".$y2."\n");
+
         return sqrt(($xDiff * $xDiff) + ($yDiff * $yDiff));
     }
 }
@@ -470,7 +472,7 @@ class WorldGenerator
             $segmentSequence->addPoint($point);
         }
 
-        $logPoints = $segmentSequence->deriveEvenlySpacedPoints(4);
+        $logPoints = $segmentSequence->deriveEvenlySpacedPoints(6);
         $logCount = count($logPoints);
 
         $entities = [];
