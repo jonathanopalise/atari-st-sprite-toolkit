@@ -55,7 +55,7 @@ class Point
         $xDiff = $x2 - $x1;
         $yDiff = $y2 - $y1;
 
-        echo("[x1 = ".$x1.", y1 = ".$y1.", x2 = ".$x2.", y2 = ".$y2."\n");
+        //echo("[x1 = ".$x1.", y1 = ".$y1.", x2 = ".$x2.", y2 = ".$y2."\n");
 
         return sqrt(($xDiff * $xDiff) + ($yDiff * $yDiff));
     }
@@ -66,12 +66,14 @@ class Entity
     private $point;
     private $type;
     private $appearance;
+    private $yaw;
 
-    public function __construct(Point $point, $type, $appearance)
+    public function __construct(Point $point, $type, $appearance, $yaw)
     {
         $this->point = $point;
         $this->type = $type;
         $this->appearance = $appearance;
+        $this->yaw = $yaw;
     }
 
     public function getX()
@@ -104,13 +106,9 @@ class Entity
         return $this->appearance;
     }
 
-    public function createRelocatedClone($x, $y)
+    public function getYaw()
     {
-        return new self(
-            new Point($x, $y),
-            $this->type,
-            $this->appearance
-        );
+        return $this->yaw;
     }
 }
 
@@ -407,8 +405,24 @@ class WorldGenerator
         $logCount = count($logPoints);
 
         $entities = [];
-        foreach ($logPoints as $point) {
-            $entities[] = new Entity($point, ENTITY_TYPE_LOG, 10);
+
+        for ($pointIndex = 0; $pointIndex < count($logPoints); $pointIndex++) {
+            $point = $logPoints[$pointIndex];
+            if ($pointIndex == count($logPoints) - 1) {
+                $nextPointIndex = 0;
+            } else {
+                $nextPointIndex = $pointIndex + 1;
+            }
+            $nextPoint = $logPoints[$nextPointIndex];
+
+            $yaw = atan2(
+                $nextPoint->getY() - $point->getY(),
+                $nextPoint->getX() - $point->getX()
+            );
+
+            $yaw += M_PI;
+            $yawInteger = intval($yaw * 512 / M_PI);
+            $entities[] = new Entity($point, ENTITY_TYPE_LOG, 10, $yawInteger);
         }
 
         $sceneryElements = $document->getElementsByTagName('ellipse');
@@ -435,7 +449,8 @@ class WorldGenerator
         return new Entity(
             new Point($x, $y),
             ENTITY_TYPE_SCENERY,
-            $appearance
+            $appearance,
+            0
         );
     }
 

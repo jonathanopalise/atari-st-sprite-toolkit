@@ -11,7 +11,8 @@ World world = {
             .world_y = 0,
             .world_z = <?php echo($entity->getYAsInt()); ?>,
             .type = <?php echo($entity->getType()); ?>,
-            .appearance = <?php echo($entity->getAppearance()); ?>
+            .appearance = <?php echo($entity->getAppearance()); ?>,
+            .yaw = <?php echo($entity->getYaw()); ?>
         }<?php if ($entityKey !== array_key_last($entities)) { ?>,<?php } ?>
         <?php } ?>
     }
