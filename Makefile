@@ -32,7 +32,7 @@ src/generated/world_data.o: src/generated/world_data.c src/world.h
 	$(CC) $(CFLAGS) -c src/generated/world_data.c -o src/generated/world_data.o
 
 src/generated/world_data.c: src/generate_world_data.php src/world_data_template.php
-	$(PHP) src/generate_world_data.php assets/pd4.svg src/generated/world_data.c
+	$(PHP) src/generate_world_data.php assets/track2.svg src/generated/world_data.c
 
 src/generated/sin_cos.o: src/generated/sin_cos.c src/sin_cos.h
 	$(CC) $(CFLAGS) -c src/generated/sin_cos.c -o src/generated/sin_cos.o

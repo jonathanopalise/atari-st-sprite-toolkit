@@ -91,7 +91,7 @@ $typeDefinitions = [
         'left' => 265,
         'top' => 451,
         'width' => 241,
-        'height' => 40,
+        'height' => 30,
     ],
 ];
 

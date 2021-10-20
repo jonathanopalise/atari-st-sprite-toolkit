@@ -86,12 +86,12 @@ class Entity
 
     public function getXAsInt()
     {
-        return intval($this->getX());
+        return intval($this->getX() - 16384);
     }
 
     public function getYAsInt()
     {
-        return intval($this->getY());
+        return intval($this->getY() - 16384);
     }
 
     public function getType()
@@ -255,75 +255,6 @@ class SegmentSequence
     }
 }
 
-class PointCollection
-{
-    private $points;
-
-    public function __construct(array $points)
-    {
-        foreach ($points as $point) {
-            if (!$point instanceof Entity) {
-                throw new RuntimeException('Unexpected type in array');
-            }
-        }
-
-        $this->points = $points;
-    }
-
-    public function getRealignedToBoundingBox($desiredMinX, $desiredMinY, $desiredMaxX, $desiredMaxY)
-    {
-        $actualMinX = null;
-        $actualMaxX = null;
-        $actualMinY = null;
-        $actualMaxY = null;
-
-        foreach ($this->points as $point) {
-            $pointX = $point->getX();
-            $pointY = $point->getY();
-
-            if (is_null($actualMinX) || $pointX < $actualMinX) {
-                $actualMinX = $pointX;
-            }
-
-            if (is_null($actualMaxX) || $pointX > $actualMaxX) {
-                $actualMaxX = $pointX;
-            }
-
-            if (is_null($actualMinY) || $pointY < $actualMinY) {
-                $actualMinY = $pointY;
-            }
-
-            if (is_null($actualMaxY) || $pointY > $actualMaxY) {
-                $actualMaxY = $pointY;
-            }
-        }
-
-        $desiredWidth = $desiredMaxX - $desiredMinX;
-        $desiredHeight = $desiredMaxY - $desiredMinY;
-
-        $actualWidth = $actualMaxX - $actualMinX;
-        $actualHeight = $actualMaxY - $actualMinY;
-
-        $newPoints = [];
-        foreach ($this->points as $point) {
-            $fractionX = ($point->getX() - $actualMinX) / $actualWidth;
-            $fractionY = ($point->getY() - $actualMinY) / $actualHeight;
-
-            $newX = $desiredMinX + ($desiredWidth * $fractionX);
-            $newY = $desiredMinY + ($desiredHeight * $fractionY);
-
-            $newPoints[] = $point->createRelocatedClone($newX, $newY);
-        }
-
-        return $newPoints;
-    }
-
-    public function getPoints()
-    {
-        return $this->points;
-    }
-}
-
 class CubicBezier
 {
     private $point1;
@@ -472,7 +403,7 @@ class WorldGenerator
             $segmentSequence->addPoint($point);
         }
 
-        $logPoints = $segmentSequence->deriveEvenlySpacedPoints(6);
+        $logPoints = $segmentSequence->deriveEvenlySpacedPoints(600);
         $logCount = count($logPoints);
 
         $entities = [];
@@ -487,18 +418,9 @@ class WorldGenerator
 
         $entityCount = count($entities);
 
-        $pointCollection = new PointCollection($entities);
-        $realignedPoints = $pointCollection->getRealignedToBoundingBox(-16380, -16380, 16380, 16380);
-
-        $world = new World($realignedPoints, $logCount);
+        $world = new World($entities, $logCount);
 
         return $world;
-
-        /*foreach ($realignedPoints as $point) {
-            echo($point->getx() . " " . $point->getY() . "\n");
-        }*/
-
-        //var_dump(count($realignedPoints));
     }
 
     private function generateSceneryEntity($element)
