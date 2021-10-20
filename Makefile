@@ -31,7 +31,7 @@ src/generated/ground_sprites.c: src/generate_ground_sprites.php $(ASSETS_GIF) sr
 src/generated/world_data.o: src/generated/world_data.c src/world.h
 	$(CC) $(CFLAGS) -c src/generated/world_data.c -o src/generated/world_data.o
 
-src/generated/world_data.c: src/generate_world_data.php src/world_data_template.php
+src/generated/world_data.c: src/generate_world_data.php assets/track2.svg src/world_data_template.php
 	$(PHP) src/generate_world_data.php assets/track2.svg src/generated/world_data.c
 
 src/generated/sin_cos.o: src/generated/sin_cos.c src/sin_cos.h

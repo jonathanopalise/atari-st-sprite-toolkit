@@ -408,10 +408,10 @@ class WorldGenerator
 
         for ($pointIndex = 0; $pointIndex < count($logPoints); $pointIndex++) {
             $point = $logPoints[$pointIndex];
-            if ($pointIndex == count($logPoints) - 1) {
-                $nextPointIndex = 0;
-            } else {
-                $nextPointIndex = $pointIndex + 1;
+
+            $nextPointIndex = $pointIndex + 1;
+            if ($nextPointIndex > count($logPoints) - 1) {
+                $nextPointIndex -= count($logPoints);
             }
             $nextPoint = $logPoints[$nextPointIndex];
 
@@ -425,7 +425,7 @@ class WorldGenerator
             $entities[] = new Entity($point, ENTITY_TYPE_LOG, 10, $yawInteger);
         }
 
-        $sceneryElements = $document->getElementsByTagName('ellipse');
+        $sceneryElements = $document->getElementsByTagName('circle');
         foreach ($sceneryElements as $sceneryElement) {
             $entities[] = $this->generateSceneryEntity($sceneryElement);
         }
