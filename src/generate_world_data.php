@@ -410,7 +410,11 @@ class WorldGenerator
         $entities = [];
 
         for ($pointIndex = 0; $pointIndex < count($logPoints); $pointIndex++) {
-            $point = $logPoints[$pointIndex];
+            $currentPointIndex = $pointIndex;
+            if ($currentPointIndex > count($logPoints) - 1) {
+                $currentPointIndex -= count($logPoints);
+            }
+            $point = $logPoints[$currentPointIndex];
 
             $nextPointIndex = $pointIndex + 1;
             if ($nextPointIndex > count($logPoints) - 1) {
@@ -424,7 +428,11 @@ class WorldGenerator
             );
 
             $yaw += M_PI;
-            $yawInteger = intval($yaw * 512 / M_PI);
+            $yawInteger = 1023 - intval($yaw * 512 / M_PI);
+            $yawInteger += 768;
+            if ($yawInteger > 1023) {
+                $yawInteger -= 1024;
+            }
             $entities[] = new Entity($point, ENTITY_TYPE_LOG, 10, $yawInteger);
         }
 

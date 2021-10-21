@@ -116,31 +116,14 @@ void main_supervisor() {
             valuePointer++;
         }
 
-        /*if (joyRight) {
-            world.camera_yaw+=16;
-            if (world.camera_yaw > 1023) {
-                world.camera_yaw -= 1024;
-            }
-        } else if (joyLeft) {
-            world.camera_yaw-=16;
-            if (world.camera_yaw < 0) {
-                world.camera_yaw += 1024;
-            }
-        }*/
-
-        /*if (joyUp) {
-            world.camera_world_x += sin_table[world.camera_yaw] / 2;
-            world.camera_world_z += cos_table[world.camera_yaw] / 2;
-        }*/
-
         entity = &world.entities[position];
         world.camera_world_x = entity->world_x;
         world.camera_world_z = entity->world_z;
-        world.camera_yaw = 1023 - entity->yaw;
-        world.camera_yaw += 768;
-        if (world.camera_yaw > 1023) {
-            world.camera_yaw -= 1024;
-        }
+        world.camera_yaw = entity->yaw;
+        //world.camera_yaw += 768;
+        //if (world.camera_yaw > 1023) {
+        //    world.camera_yaw -= 1024;
+        //}
         position++;
         if (position == world.log_count) {
             position=0;
