@@ -14,6 +14,11 @@ class Point
         $this->y = $y;
     }
 
+    public function importFromData($x, $y)
+    {
+        return new Point($x, 16384 - $y);
+    }
+
     public function getX()
     {
         return $this->x;
@@ -54,8 +59,6 @@ class Point
 
         $xDiff = $x2 - $x1;
         $yDiff = $y2 - $y1;
-
-        //echo("[x1 = ".$x1.", y1 = ".$y1.", x2 = ".$x2.", y2 = ".$y2."\n");
 
         return sqrt(($xDiff * $xDiff) + ($yDiff * $yDiff));
     }
@@ -330,7 +333,7 @@ class CurveStringParser
                 $potentialYCoordinate = $potentialCoordinatePairElements[1];
 
                 if (is_numeric($potentialXCoordinate) && is_numeric($potentialYCoordinate)) {
-                    $coordinates[] = new Point(
+                    $coordinates[] = Point::importFromData(
                         floatval($potentialXCoordinate),
                         floatval($potentialYCoordinate)
                     );
@@ -447,7 +450,7 @@ class WorldGenerator
         );
 
         return new Entity(
-            new Point($x, $y),
+            Point::importFromData($x, $y),
             ENTITY_TYPE_SCENERY,
             $appearance,
             0
