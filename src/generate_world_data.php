@@ -445,6 +445,9 @@ class WorldGenerator
 
         $world = new World($entities, $logCount);
 
+        echo("world entity count: ".$entityCount."\n");
+        echo("world log count: ".$logCount."\n");
+
         return $world;
     }
 

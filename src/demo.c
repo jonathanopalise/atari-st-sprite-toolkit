@@ -87,7 +87,11 @@ void main_supervisor() {
     world.camera_yaw = 0;
 
     Entity *entity;
-    int position;
+    Entity *next_entity;
+    int track_position;
+    int log_index;
+    int next_log_index;
+    int offset_within_log;
     int index;
     int size;
     int yaw;
@@ -98,7 +102,7 @@ void main_supervisor() {
     int16_t car_z;
 
     yaw = 0;
-    position = 0;
+    track_position = 0;
 
     while (1) {
         joyUp=joy_data&1; 
@@ -119,25 +123,40 @@ void main_supervisor() {
             valuePointer++;
         }
 
-        entity = &world.entities[position];
+        log_index = track_position / 600;
+        offset_within_log = track_position % 600;
+
+        next_log_index = log_index+1;
+        if (next_log_index == world.log_count) {
+            next_log_index = 0;
+        }
+
+        entity = &world.entities[log_index];
+        next_entity = &world.entities[next_log_index];
         //world.camera_world_x = entity->world_x;
         //world.camera_world_z = entity->world_z;
         //world.camera_yaw = entity->yaw;
 
-        car_x = entity->world_x;
-        car_z = entity->world_z;
+        car_x = entity->world_x + ((next_entity->world_x - entity->world_x) * offset_within_log / 600);
+        car_z = entity->world_z + ((next_entity->world_z - entity->world_z) * offset_within_log / 600);
+        world.camera_yaw = entity->yaw + ((next_entity->yaw - entity->yaw) * offset_within_log / 600);
 
-        world.camera_yaw = entity->yaw;
-        world.camera_world_x = car_x - sin_table[entity->yaw];
-        world.camera_world_z = car_z - cos_table[entity->yaw];
+        //world.camera_yaw = entity->yaw;
+        world.camera_world_x = car_x - sin_table[world.camera_yaw];
+        world.camera_world_z = car_z - cos_table[world.camera_yaw];
 
         //world.camera_yaw += 768;
         //if (world.camera_yaw > 1023) {
         //    world.camera_yaw -= 1024;
         //}
-        position++;
-        if (position == world.log_count) {
-            position=0;
+        //log_index++;
+        //if (log_index == world.log_count) {
+        //    log_index=0;
+        //}
+        //
+        track_position += 200;
+        if (track_position > world.log_count * 600) {
+            track_position -= (world.log_count * 600);
         }
 
         transform_and_rotate_world(&world, sin_table, cos_table);
