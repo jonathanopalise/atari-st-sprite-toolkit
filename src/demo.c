@@ -94,6 +94,9 @@ void main_supervisor() {
     uint32_t value;
     uint32_t *valuePointer;
 
+    int16_t car_x;
+    int16_t car_z;
+
     yaw = 0;
     position = 0;
 
@@ -117,9 +120,17 @@ void main_supervisor() {
         }
 
         entity = &world.entities[position];
-        world.camera_world_x = entity->world_x;
-        world.camera_world_z = entity->world_z;
+        //world.camera_world_x = entity->world_x;
+        //world.camera_world_z = entity->world_z;
+        //world.camera_yaw = entity->yaw;
+
+        car_x = entity->world_x;
+        car_z = entity->world_z;
+
         world.camera_yaw = entity->yaw;
+        world.camera_world_x = car_x - sin_table[entity->yaw];
+        world.camera_world_z = car_z - cos_table[entity->yaw];
+
         //world.camera_yaw += 768;
         //if (world.camera_yaw > 1023) {
         //    world.camera_yaw -= 1024;
