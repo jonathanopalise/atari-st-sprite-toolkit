@@ -439,18 +439,14 @@ class WorldGenerator
                 $nextPoint->getX() - $point->getX()
             );
 
-            /*$yaw += M_PI;
-            $yawInteger = 1023 - intval($yaw * 1024 / (2*M_PI));
-            $yawInteger += 768;
-            if ($yawInteger > 1023) {
-                $yawInteger -= 1024;
-            }*/
-
             $yaw += M_PI;
             $yaw = (M_PI * 2) - $yaw;
+            $yaw += M_PI * 1.5;
+            if ($yaw > M_PI * 2) {
+                $yaw -= M_PI * 2;
+            }
 
             $yawInteger = intval($yaw * 1024 / (2*M_PI));
-            $yawInteger += 768;
             if ($yawInteger > 1023) {
                 $yawInteger -= 1024;
             }
