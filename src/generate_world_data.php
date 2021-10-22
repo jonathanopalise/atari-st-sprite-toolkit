@@ -439,11 +439,11 @@ class WorldGenerator
                 $nextPoint->getX() - $point->getX()
             );
 
-            $yaw += M_PI;
-            $yaw = (M_PI * 2) - $yaw;
-            $yaw += M_PI * 1.5;
-            if ($yaw > M_PI * 2) {
-                $yaw -= M_PI * 2;
+            $yaw += M_PI; // bring yaw into a 0 - M_PI * 2 range
+            $yaw = (M_PI * 2) - $yaw; // reverse yaw
+            $yaw -= M_PI * 0.5; // rotate by 270 degrees
+            if ($yaw < 0) {
+                $yaw += M_PI * 2;
             }
 
             $yawInteger = intval($yaw * 1024 / (2*M_PI));
