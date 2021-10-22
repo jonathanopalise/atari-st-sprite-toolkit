@@ -508,8 +508,8 @@ class WorldGenerator
         $cameraY = $cameraEntity->getY();
         $cameraYaw = $cameraEntity->getYawRadians();
 
-        $v1 = new Point(- 8000, 16384);
-        $v2 = new Point(8000, 16384);
+        $v1 = new Point(- 10000, 16384);
+        $v2 = new Point(10000, 16384);
         $v3 = new Point(0, - 500);
 
         $visibleEntities = [];
@@ -527,12 +527,46 @@ class WorldGenerator
                 $transformedAndRotatedY
             );
 
-            if ($this->pointInTriangle($point, $v1, $v2, $v3)) {
-                $visibleEntities[] = $entityIndex;
+            $visible = true;
+
+            if (!$this->pointInTriangle($point, $v1, $v2, $v3)) {
+                $visible = false;
             }
+
+            if ($transformedAndRotatedY > 2000 && ($entityIndex & 1) && ($visEntity->getType() == ENTITY_TYPE_LOG)) {
+                $visible = false;
+            }
+
+            if ($visible) {
+                $visibleEntities[] = [
+                    'offset' => $entityIndex,
+                    'depth' => $transformedAndRotatedY
+                ];
+            }
+
         }
 
-        return $visibleEntities;
+        usort($visibleEntities, [$this, 'cmp']);
+
+        $visibleEntityOffsets = [];
+        foreach ($visibleEntities as $visibleEntity) {
+            $visibleEntityOffsets[] = $visibleEntity['offset'];
+        }
+
+        var_dump($visibleEntityOffsets);
+
+        return $visibleEntityOffsets;
+    }
+
+    function cmp($a, $b)
+    {
+        $depthA = $a['depth'];
+        $depthB = $b['depth'];
+
+        if ($depthA == $depthB) {
+            return 0;
+        }
+        return ($depthA > $depthB) ? -1 : 1;
     }
 
     // https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle

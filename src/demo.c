@@ -111,7 +111,6 @@ void main_supervisor() {
         joyLeft=joy_data&4;
         joyRight=joy_data&8;
 
-        //memset(logBase, 0, 32000);
         valuePointer = logBase;
         value = 0x0000ffff;
         for (index = 0; index < 4000; index++) {
@@ -134,69 +133,18 @@ void main_supervisor() {
 
         entity = &world.entities[log_index];
         next_entity = &world.entities[next_log_index];
-        //world.camera_world_x = entity->world_x;
-        //world.camera_world_z = entity->world_z;
-        //world.camera_yaw = entity->yaw;
 
         car_x = entity->world_x + ((next_entity->world_x - entity->world_x) * offset_within_log / 600);
         car_z = entity->world_z + ((next_entity->world_z - entity->world_z) * offset_within_log / 600);
         world.camera_yaw = entity->yaw + ((next_entity->yaw - entity->yaw) * offset_within_log / 600);
 
-        //world.camera_yaw = entity->yaw;
         world.camera_world_x = car_x - sin_table[world.camera_yaw];
         world.camera_world_z = car_z - cos_table[world.camera_yaw];
 
-        //world.camera_yaw += 768;
-        //if (world.camera_yaw > 1023) {
-        //    world.camera_yaw -= 1024;
-        //}
-        //log_index++;
-        //if (log_index == world.log_count) {
-        //    log_index=0;
-        //}
-        //
-        track_position += 200;
+        track_position += 400;
         if (track_position > world.log_count * 600) {
             track_position -= (world.log_count * 600);
         }
-
-        //transform_and_rotate_world(&world, sin_table, cos_table);
-
-        /*visible_entity_count=0;
-        entity = world.entities;
-        current_visible_entity_pointer=visible_entity_pointers;
-        for (index=0; index<world.entity_count; index++) {
-            if (entity->transformed_world_z > 100 && entity->transformed_world_z < 16384) {
-                *current_visible_entity_pointer=entity;
-                current_visible_entity_pointer++;
-                visible_entity_count++;
-            }
-            entity++;
-        }*/
-
-        //qsort(visible_entity_pointers,visible_entity_count,sizeof(Entity *),compare_function);
-
-        /*current_visible_entity_pointer = visible_entity_pointers;
-        for (index=0; index<visible_entity_count; index++) {
-            entity = *current_visible_entity_pointer;
-
-            project_entity(entity);
-
-            size = fixed_div_6_10(400, entity->transformed_world_z);
-            if (size > 255) {
-                size = 255;
-            }
-
-            draw_ground_sprite(
-                    entity->appearance,
-                    entity->screen_x,
-                    entity->screen_y,
-                    size,
-                    logBase
-            );
-
-            current_visible_entity_pointer++; 
-        }*/
 
         for (int index = 0; index < entity->visible_entities_length; index++) {
             vis_entity = &world.entities[entity->visible_entities[index]];
