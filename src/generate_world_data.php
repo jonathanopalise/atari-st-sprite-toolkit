@@ -509,8 +509,8 @@ class WorldGenerator
         $cameraYaw = $cameraEntity->getYawRadians();
 
         $v1 = new Point(- 8000, 16384);
-        $v2 = new Point(8000, 6000);
-        $v3 = new Point(0, - 600);
+        $v2 = new Point(8000, 16384);
+        $v3 = new Point(0, - 16384);
 
         $visibleEntities = [];
         for ($entityIndex = 0; $entityIndex < count($entities); $entityIndex++) {
@@ -527,9 +527,9 @@ class WorldGenerator
                 $transformedAndRotatedY
             );
 
-            if ($this->pointInTriangle($point, $v1, $v2, $v3)) {
+            //if ($this->pointInTriangle($point, $v1, $v2, $v3)) {
                 $visibleEntities[] = $entityIndex;
-            }
+            //}
         }
 
         return $visibleEntities;

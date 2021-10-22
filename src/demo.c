@@ -88,6 +88,7 @@ void main_supervisor() {
 
     Entity *entity;
     Entity *next_entity;
+    Entity *vis_entity;
     int track_position;
     int log_index;
     int next_log_index;
@@ -159,9 +160,9 @@ void main_supervisor() {
             track_position -= (world.log_count * 600);
         }
 
-        transform_and_rotate_world(&world, sin_table, cos_table);
+        //transform_and_rotate_world(&world, sin_table, cos_table);
 
-        visible_entity_count=0;
+        /*visible_entity_count=0;
         entity = world.entities;
         current_visible_entity_pointer=visible_entity_pointers;
         for (index=0; index<world.entity_count; index++) {
@@ -171,11 +172,11 @@ void main_supervisor() {
                 visible_entity_count++;
             }
             entity++;
-        }
+        }*/
 
         //qsort(visible_entity_pointers,visible_entity_count,sizeof(Entity *),compare_function);
 
-        current_visible_entity_pointer = visible_entity_pointers;
+        /*current_visible_entity_pointer = visible_entity_pointers;
         for (index=0; index<visible_entity_count; index++) {
             entity = *current_visible_entity_pointer;
 
@@ -195,7 +196,29 @@ void main_supervisor() {
             );
 
             current_visible_entity_pointer++; 
-        }
+        }*/
+
+        for (int index = 0; index < entity->visible_entities_length; index++) {
+            vis_entity = &world.entities[entity->visible_entities[index]];
+            project_entity(vis_entity, &world, sin_table, cos_table);
+
+            if (vis_entity->transformed_world_z > 100 && vis_entity->transformed_world_z < 16384) {
+
+                size = fixed_div_6_10(400, vis_entity->transformed_world_z);
+                if (size > 255) {
+                    size = 255;
+                }
+
+                draw_ground_sprite(
+                        vis_entity->appearance,
+                        vis_entity->screen_x,
+                        vis_entity->screen_y,
+                        size,
+                        logBase
+                );
+            }
+
+        } 
 
         framebuffer_flip();
     }
