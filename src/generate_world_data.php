@@ -439,12 +439,22 @@ class WorldGenerator
                 $nextPoint->getX() - $point->getX()
             );
 
+            /*$yaw += M_PI;
+            $yawInteger = 1023 - intval($yaw * 1024 / (2*M_PI));
+            $yawInteger += 768;
+            if ($yawInteger > 1023) {
+                $yawInteger -= 1024;
+            }*/
+
             $yaw += M_PI;
-            $yawInteger = 1023 - intval($yaw * 512 / M_PI);
+            $yaw = (M_PI * 2) - $yaw;
+
+            $yawInteger = intval($yaw * 1024 / (2*M_PI));
             $yawInteger += 768;
             if ($yawInteger > 1023) {
                 $yawInteger -= 1024;
             }
+
             $entities[] = new Entity($point, ENTITY_TYPE_LOG, 10, $yawInteger, []);
         }
 
