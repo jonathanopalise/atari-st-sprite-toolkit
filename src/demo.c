@@ -173,7 +173,7 @@ void main_supervisor() {
             entity++;
         }
 
-        qsort(visible_entity_pointers,visible_entity_count,sizeof(Entity *),compare_function);
+        //qsort(visible_entity_pointers,visible_entity_count,sizeof(Entity *),compare_function);
 
         current_visible_entity_pointer = visible_entity_pointers;
         for (index=0; index<visible_entity_count; index++) {

@@ -13,7 +13,7 @@ bin/demo.prg: $(OBJECT_FILES)
 	./brown.out -i src/demo.elf -o bin/demo.prg
 	chmod +x bin/demo.prg
 
-src/demo.o: src/demo.c src/blitter_sprites.o
+src/demo.o: src/demo.c $(OBJECT_FILES)
 	$(CC) $(CFLAGS) -c src/demo.c -o src/demo.o
 
 src/blitter_sprites.o: src/blitter_sprites.s src/blitter_sprites.h

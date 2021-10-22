@@ -8,7 +8,7 @@ class Point
     private $x;
     private $y;
 
-    public function __construct($x, $y)
+    public function __construct(float $x, float $y)
     {
         $this->x = $x;
         $this->y = $y;
@@ -70,13 +70,15 @@ class Entity
     private $type;
     private $appearance;
     private $yaw;
+    private $visibleEntities = [];
 
-    public function __construct(Point $point, $type, $appearance, $yaw)
+    public function __construct(Point $point, $type, $appearance, $yaw, array $visibleEntities)
     {
         $this->point = $point;
         $this->type = $type;
         $this->appearance = $appearance;
         $this->yaw = $yaw;
+        $this->visibleEntities = $visibleEntities;
     }
 
     public function getX()
@@ -112,6 +114,16 @@ class Entity
     public function getYaw()
     {
         return $this->yaw;
+    }
+
+    public function getVisibleEntities()
+    {
+        return $this->visibleEntities;
+    }
+
+    public function setVisibleEntities(array $visibleEntities)
+    {
+        $this->visibleEntities = $visibleEntities;
     }
 }
 
@@ -433,7 +445,7 @@ class WorldGenerator
             if ($yawInteger > 1023) {
                 $yawInteger -= 1024;
             }
-            $entities[] = new Entity($point, ENTITY_TYPE_LOG, 10, $yawInteger);
+            $entities[] = new Entity($point, ENTITY_TYPE_LOG, 10, $yawInteger, []);
         }
 
         $sceneryElements = $document->getElementsByTagName('circle');
@@ -442,6 +454,13 @@ class WorldGenerator
         }
 
         $entityCount = count($entities);
+
+        for ($entityIndex = 0; $entityIndex < count($logPoints); $entityIndex++) {
+            $entity = $entities[$entityIndex];
+            $entity->setVisibleEntities(
+                $this->deriveVisibleEntities($entities, $entities[$entityIndex])
+            );
+        }
 
         $world = new World($entities, $logCount);
 
@@ -464,8 +483,19 @@ class WorldGenerator
             Point::importFromData($x, $y),
             ENTITY_TYPE_SCENERY,
             $appearance,
-            0
+            0,
+            []
         );
+    }
+
+    private function deriveVisibleEntities(array $entities, Entity $entity)
+    {
+        $visibleEntities = [];
+        for ($entityIndex = 0; $entityIndex < count($entities); $entityIndex++) {
+            $visibleEntities[] = $entityIndex;
+        }
+
+        return $visibleEntities;
     }
 
     private function extractAppearanceFromStyle($style)

@@ -18,6 +18,8 @@ typedef struct {
     int16_t transformed_world_z;
     int16_t screen_x;
     int16_t screen_y;
+    uint16_t visible_entities_length;
+    uint8_t *visible_entities;
 } Entity;
 
 typedef struct {
