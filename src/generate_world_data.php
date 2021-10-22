@@ -70,14 +70,16 @@ class Entity
     private $type;
     private $appearance;
     private $yaw;
+    private $yawRadians;
     private $visibleEntities = [];
 
-    public function __construct(Point $point, $type, $appearance, $yaw, array $visibleEntities)
+    public function __construct(Point $point, $type, $appearance, $yaw, $yawRadians, array $visibleEntities)
     {
         $this->point = $point;
         $this->type = $type;
         $this->appearance = $appearance;
         $this->yaw = $yaw;
+        $this->yawRadians = $yawRadians;
         $this->visibleEntities = $visibleEntities;
     }
 
@@ -114,6 +116,11 @@ class Entity
     public function getYaw()
     {
         return $this->yaw;
+    }
+
+    public function getYawRadians()
+    {
+        return $this->yawRadians;
     }
 
     public function getVisibleEntities()
@@ -451,7 +458,7 @@ class WorldGenerator
                 $yawInteger -= 1024;
             }
 
-            $entities[] = new Entity($point, ENTITY_TYPE_LOG, 10, $yawInteger, []);
+            $entities[] = new Entity($point, ENTITY_TYPE_LOG, 10, $yawInteger, $yaw, []);
         }
 
         $sceneryElements = $document->getElementsByTagName('circle');
@@ -490,18 +497,60 @@ class WorldGenerator
             ENTITY_TYPE_SCENERY,
             $appearance,
             0,
+            0,
             []
         );
     }
 
-    private function deriveVisibleEntities(array $entities, Entity $entity)
+    private function deriveVisibleEntities(array $entities, Entity $cameraEntity)
     {
+        $cameraX = $cameraEntity->getX();
+        $cameraY = $cameraEntity->getY();
+        $cameraYaw = $cameraEntity->getYawRadians();
+
+        $v1 = new Point($cameraX - 2000, $cameraY + 6000);
+        $v2 = new Point($cameraX + 2000, $cameraY + 6000);
+        $v3 = new Point($cameraX, $cameraY - 600);
+
         $visibleEntities = [];
         for ($entityIndex = 0; $entityIndex < count($entities); $entityIndex++) {
-            $visibleEntities[] = $entityIndex;
+            $visEntity = $entities[$entityIndex];
+
+            $transformedX = $visEntity->getX() - $cameraX;
+            $transformedY = $visEntity->getY() - $cameraY;
+
+            $transformedAndRotatedX = $transformedX * cos($cameraYaw) - $transformedY * sin($cameraYaw);
+            $transformedAndRotatedY = $transformedY * cos($cameraYaw) + $transformedX * sin($cameraYaw);
+
+            $point = new Point(
+                $transformedAndRotatedX,
+                $transformedAndRotatedY
+            );
+
+            if ($this->pointInTriangle($point, $v1, $v2, $v3)) {
+                $visibleEntities[] = $entityIndex;
+            }
         }
 
         return $visibleEntities;
+    }
+
+    // https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
+    private function sign(Point $p1, Point $p2, Point $p3)
+    {
+        return ($p1->getX() - $p3->getX()) * ($p2->getY() - $p3->getY()) - ($p2->getX() - $p3->getX()) * ($p1->getY() - $p3->getY());
+    }
+
+    private function pointInTriangle(Point $pt, Point $v1, Point $v2, Point $v3)
+    {
+        $d1 = $this->sign($pt, $v1, $v2);
+        $d2 = $this->sign($pt, $v2, $v3);
+        $d3 = $this->sign($pt, $v3, $v1);
+
+        $has_neg = ($d1 < 0) || ($d2 < 0) || ($d3 < 0);
+        $has_pos = ($d1 > 0) || ($d2 > 0) || ($d3 > 0);
+
+        return !($has_neg && $has_pos);
     }
 
     private function extractAppearanceFromStyle($style)
