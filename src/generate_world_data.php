@@ -508,9 +508,9 @@ class WorldGenerator
         $cameraY = $cameraEntity->getY();
         $cameraYaw = $cameraEntity->getYawRadians();
 
-        $v1 = new Point($cameraX - 2000, $cameraY + 6000);
-        $v2 = new Point($cameraX + 2000, $cameraY + 6000);
-        $v3 = new Point($cameraX, $cameraY - 600);
+        $v1 = new Point(- 8000, 16384);
+        $v2 = new Point(8000, 6000);
+        $v3 = new Point(0, - 600);
 
         $visibleEntities = [];
         for ($entityIndex = 0; $entityIndex < count($entities); $entityIndex++) {
