@@ -101,6 +101,8 @@ void main_supervisor() {
 
     int16_t car_x;
     int16_t car_z;
+    int16_t next_entity_yaw;
+    int16_t yaw_difference;
 
     yaw = 0;
     track_position = 0;
@@ -136,12 +138,57 @@ void main_supervisor() {
 
         car_x = entity->world_x + ((next_entity->world_x - entity->world_x) * offset_within_log / 600);
         car_z = entity->world_z + ((next_entity->world_z - entity->world_z) * offset_within_log / 600);
-        world.camera_yaw = entity->yaw + ((next_entity->yaw - entity->yaw) * offset_within_log / 600);
+        //world.camera_yaw = entity->yaw + ((next_entity->yaw - entity->yaw) * offset_within_log / 600);
+        
+        yaw_difference = next_entity->yaw - entity->yaw;
+        if (yaw_difference > 511) {
+            next_entity_yaw = next_entity->yaw - 1024;
+        } else if (yaw_difference < -512) {
+            next_entity_yaw = next_entity->yaw + 1024;
+        } else {
+            next_entity_yaw = next_entity->yaw;
+        }
+
+        world.camera_yaw = entity->yaw + ((next_entity_yaw - entity->yaw) * offset_within_log / 600);
+        if (world.camera_yaw > 1023) {
+            world.camera_yaw -= 1024;
+        } else if (world.camera_yaw < 0) {
+            world.camera_yaw += 1024;
+        }
+
+        // if the difference between entity_yaw and next_entity>yaw is greater than 512
+        // then we have probably wrapped
+        //
+        // what to do in this scenario?
+        //
+        // example: entity_yaw = 12, next_entity_yaw = 1014
+        // - yaw_difference = 1002
+        // - (condition: result > 511)
+        // - next_entity_yaw becomes -10 (next_entity_yaw - 1024)
+        // - therefore, lerp calculation is based upon -10 - 12
+        // - resulting lerped value might be less than zero
+        // - if it is, we add 1024
+        //
+        // example: entity_yaw = 1014, next_entity_yaw = 10
+        // - result = - 1004
+        // - (condition: result < -512)
+        // - next_entity_yaw becomes 1034 (next_entity_yaw + 1024)
+        // - therefore, lerp calculation is based upon 1034 - 1014
+        // - resulting lerped value might be greater than 1023
+        // - if it is, we subtract 1024
+
+        // problem happens when next entity yaw is 
+        // e.g. 
+        //   entity_yaw = 4
+        //   next_entity_yaw = 1000
+        //
+        //   we need to work out the shortest way to get from entity_yaw to next_entity_yaw:
+        //     whether to subtract or add
 
         world.camera_world_x = car_x - sin_table[world.camera_yaw];
         world.camera_world_z = car_z - cos_table[world.camera_yaw];
 
-        track_position += 400;
+        track_position += 200;
         if (track_position > world.log_count * 600) {
             track_position -= (world.log_count * 600);
         }
@@ -150,7 +197,7 @@ void main_supervisor() {
             vis_entity = &world.entities[entity->visible_entities[index]];
             project_entity(vis_entity, &world, sin_table, cos_table);
 
-            if (vis_entity->transformed_world_z > 100 && vis_entity->transformed_world_z < 16384) {
+            if (vis_entity->transformed_world_z > 50) {
 
                 size = fixed_div_6_10(400, vis_entity->transformed_world_z);
                 if (size > 255) {

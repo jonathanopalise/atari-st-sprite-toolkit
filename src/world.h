@@ -12,7 +12,7 @@ typedef struct {
     int16_t world_z;
     uint16_t type; // log or scenery
     uint16_t appearance; // log appearance or scenery id
-    uint16_t yaw;
+    int16_t yaw;
     int16_t transformed_world_x;
     int16_t transformed_world_y;
     int16_t transformed_world_z;
