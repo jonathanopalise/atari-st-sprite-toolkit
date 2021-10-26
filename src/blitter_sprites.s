@@ -18,6 +18,8 @@ empty_pixels_on_right:
 additional_word_added:
     dc.w 0
 
+skew:
+    dc.w 0
 
 sprite_jump_table:
     dc.l 0 ; should never be used
@@ -114,6 +116,7 @@ _draw_sprite:
 
     move.l a3,d0                       ; get desired xpos of scenery object
     and.l #$f,d0                       ; convert to skew value for blitter
+    move.w d0,skew
     cmp.w empty_pixels_on_right,d0
     ble.s zeroskew
 
@@ -312,9 +315,25 @@ nocalcendmask1:
     tst.w additional_word_added
     bne.s normalendmask3
 
-    move.w #$ffff,($ffff8a2c).w            ; endmask3
+    ; how many pixels do we need to draw?
+    ; (16 - empty_right_pixels) + skew
 
-    bra.s blitterstart
+    ;lsr.w #1,d0
+
+    move.w skew,d0
+    move.w #15,d1
+    sub.w empty_pixels_on_right,d1
+    add.w d1,d0
+    add.w d0,d0
+
+    ;move.w (a3,d0.w),d1
+    ;move.w d1,($ffff8a2c).w            ; endmask3
+
+    ;move.w #$ffff,($ffff8a2c).w            ; endmask3
+
+    ;bra.s blitterstart
+
+
 
 normalendmask3:
     lea.l rightendmasks(pc),a3
@@ -428,7 +447,7 @@ draw_now:
     bsr.s drawsceneryplane
 
     subq.l #6,a1                        ; move destination back to initial bitplane
-    move.w #$0207,($ffff8a3a).w         ; hop/op: read from source, source | destination
+    move.w #$0203,($ffff8a3a).w         ; hop/op: read from source, source | destination
 
     addq.l #2,a0                        ; move source to next bitplane
     bsr.s drawsceneryplane
