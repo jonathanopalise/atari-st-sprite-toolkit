@@ -21,6 +21,9 @@ additional_word_added:
 skew:
     dc.w 0
 
+masked:
+    dc.w 0
+
 sprite_jump_table:
     dc.l 0 ; should never be used
     dc.l draw_eight_line_chunks    ; 16 wide
@@ -104,6 +107,7 @@ _draw_sprite:
 
     move.l 24(a0),a1 ; screen buffer
     move.w 30(a0),empty_pixels_on_right
+    move.w 34(a0),masked
 
     move.l 12(a0),a0 ; source data pointer
 
@@ -443,6 +447,9 @@ draw_one_line_chunks:
 draw_now:
     move.b #$c0,d6                      ; blitter start instruction
 
+    tst.w masked
+    beq.s colour_unmasked
+
     rept 3
     bsr.s drawsceneryplane
     addq.l #2,a1                        ; move to next bitplane
@@ -450,8 +457,14 @@ draw_now:
     bsr.s drawsceneryplane
 
     subq.l #6,a1                        ; move destination back to initial bitplane
-    move.w #$0203,($ffff8a3a).w         ; hop/op: read from source, source | destination
 
+    move.w #$0207,($ffff8a3a).w         ; hop/op: read from source, source | destination
+    bra.s colour
+
+colour_unmasked:
+    move.w #$0203,($ffff8a3a).w         ; hop/op: read from source, solid colour
+
+colour:
     addq.l #2,a0                        ; move source to next bitplane
     bsr.s drawsceneryplane
     addq.l #2,a1                        ; move destination to next bitplane

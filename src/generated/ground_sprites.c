@@ -4,6 +4,7 @@ ground_sprite_type ground_sprite_types[] = {
         {
         // billboard_sold
         8,
+        1,
         (ground_sprite[]) {
                         {
                 31,
@@ -73,6 +74,7 @@ ground_sprite_type ground_sprite_types[] = {
     },        {
         // billboard_victory
         8,
+        1,
         (ground_sprite[]) {
                         {
                 31,
@@ -142,6 +144,7 @@ ground_sprite_type ground_sprite_types[] = {
     },        {
         // billboard_westwood
         8,
+        1,
         (ground_sprite[]) {
                         {
                 31,
@@ -211,6 +214,7 @@ ground_sprite_type ground_sprite_types[] = {
     },        {
         // billboard_lobster
         8,
+        1,
         (ground_sprite[]) {
                         {
                 31,
@@ -280,6 +284,7 @@ ground_sprite_type ground_sprite_types[] = {
     },        {
         // billboard_bubweiser
         8,
+        1,
         (ground_sprite[]) {
                         {
                 31,
@@ -349,6 +354,7 @@ ground_sprite_type ground_sprite_types[] = {
     },        {
         // billboard_wlak
         8,
+        1,
         (ground_sprite[]) {
                         {
                 31,
@@ -418,6 +424,7 @@ ground_sprite_type ground_sprite_types[] = {
     },        {
         // rock_pillar
         8,
+        1,
         (ground_sprite[]) {
                         {
                 31,
@@ -487,6 +494,7 @@ ground_sprite_type ground_sprite_types[] = {
     },        {
         // tree_rustic
         8,
+        1,
         (ground_sprite[]) {
                         {
                 31,
@@ -556,6 +564,7 @@ ground_sprite_type ground_sprite_types[] = {
     },        {
         // tree_pineapple
         8,
+        1,
         (ground_sprite[]) {
                         {
                 31,
@@ -625,6 +634,7 @@ ground_sprite_type ground_sprite_types[] = {
     },        {
         // tree_palm
         8,
+        1,
         (ground_sprite[]) {
                         {
                 31,
@@ -694,6 +704,7 @@ ground_sprite_type ground_sprite_types[] = {
     },        {
         // log
         8,
+        0,
         (ground_sprite[]) {
                         {
                 31,

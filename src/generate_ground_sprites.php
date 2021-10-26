@@ -22,6 +22,7 @@ $typeDefinitions = [
         'top' => 8,
         'width' => 147,
         'height' => 103,
+        'masked' => true,
     ],
     [
         'label' => 'billboard_victory',
@@ -29,6 +30,7 @@ $typeDefinitions = [
         'top' => 9,
         'width' => 137,
         'height' => 102,
+        'masked' => true,
     ],
     [
         'label' => 'billboard_westwood',
@@ -36,6 +38,7 @@ $typeDefinitions = [
         'top' => 241,
         'width' => 118,
         'height' => 131,
+        'masked' => true,
     ],
     [
         'label' => 'billboard_lobster',
@@ -43,6 +46,7 @@ $typeDefinitions = [
         'top' => 381,
         'width' => 150,
         'height' => 83,
+        'masked' => true,
     ],
     [
         'label' => 'billboard_bubweiser',
@@ -50,6 +54,7 @@ $typeDefinitions = [
         'top' => 136,
         'width' => 94,
         'height' => 157,
+        'masked' => true,
     ],
     [
         'label' => 'billboard_wlak',
@@ -57,6 +62,7 @@ $typeDefinitions = [
         'top' => 304,
         'width' => 168,
         'height' => 84,
+        'masked' => true,
     ],
     [
         'label' => 'rock_pillar',
@@ -64,6 +70,7 @@ $typeDefinitions = [
         'top' => 124,
         'width' => 127,
         'height' => 172,
+        'masked' => true,
     ],
     [
         'label' => 'tree_rustic',
@@ -71,6 +78,7 @@ $typeDefinitions = [
         'top' => 10,
         'width' => 155,
         'height' => 112,
+        'masked' => true,
     ],
     [
         'label' => 'tree_pineapple',
@@ -78,6 +86,7 @@ $typeDefinitions = [
         'top' => 119,
         'width' => 124,
         'height' => 116,
+        'masked' => true,
     ],
     [
         'label' => 'tree_palm',
@@ -85,6 +94,7 @@ $typeDefinitions = [
         'top' => 309,
         'width' => 89,
         'height' => 159,
+        'masked' => true,
     ],
     [
         'label' => 'log',
@@ -92,6 +102,7 @@ $typeDefinitions = [
         'top' => 451,
         'width' => 241,
         'height' => 30,
+        'masked' => false,
     ],
 ];
 
@@ -156,6 +167,7 @@ foreach ($typeDefinitions as $typeDefinition) {
     $type = [
         'label' => $typeDefinition['label'],
         'number_of_sizes' => count($scaleFactors),
+        'masked' => $typeDefinition['masked'] ? 1 : 0,
         'sprites' => $sprites,
     ];
 

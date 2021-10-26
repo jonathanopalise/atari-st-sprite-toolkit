@@ -15,6 +15,7 @@ typedef struct {
 
 typedef struct {
     int16_t number_of_elements;
+    int16_t masked;
     ground_sprite *ground_sprites;
 } ground_sprite_type;
 

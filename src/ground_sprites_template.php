@@ -6,6 +6,7 @@ ground_sprite_type ground_sprite_types[] = {
         // <?php echo($type['label']); ?>
 
         <?php echo($type['number_of_sizes']); ?>,
+        <?php echo($type['masked']); ?>,
         (ground_sprite[]) {
             <?php foreach ($type['sprites'] as $sizeKey => $size) { ?>
             {

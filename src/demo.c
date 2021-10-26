@@ -13,7 +13,9 @@
 
 void draw_ground_sprite(uint16_t sprite_index, int16_t xpos, int16_t ypos, uint16_t desired_scale_factor, void *screenBuffer)
 {
-    ground_sprite *selected_ground_sprite = &ground_sprite_types[sprite_index].ground_sprites[desired_scale_factor >> 5];
+    ground_sprite_type *selected_ground_sprite_type = &ground_sprite_types[sprite_index];
+
+    ground_sprite *selected_ground_sprite = &selected_ground_sprite_type->ground_sprites[desired_scale_factor >> 5];
 
     draw_sprite(
         xpos - selected_ground_sprite->origin_x,
@@ -22,7 +24,8 @@ void draw_ground_sprite(uint16_t sprite_index, int16_t xpos, int16_t ypos, uint1
         selected_ground_sprite->source_data_width,
         selected_ground_sprite->source_data_height,
         screenBuffer,
-        selected_ground_sprite->empty_pixels_on_right
+        selected_ground_sprite->empty_pixels_on_right,
+        selected_ground_sprite_type->masked
     );
 }
 
@@ -189,7 +192,7 @@ void main_supervisor() {
         world.camera_world_x = car_x - sin_table[world.camera_yaw];
         world.camera_world_z = car_z - cos_table[world.camera_yaw];
 
-        track_position += 100;
+        track_position += 400;
         if (track_position > world.log_count * 600) {
             track_position -= (world.log_count * 600);
         }
