@@ -331,11 +331,14 @@ nocalcendmask1:
 
     ;move.w #$ffff,($ffff8a2c).w            ; endmask3
 
-    ;bra.s blitterstart
-
-
+    bra.s applyendmask
 
 normalendmask3:
+    move.w skew,d0
+    sub.w empty_pixels_on_right,d0
+    add.w d0,d0
+
+applyendmask:
     lea.l rightendmasks(pc),a3
     move.w (a3,d0.w),d1
 
