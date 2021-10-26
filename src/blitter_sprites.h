@@ -7,7 +7,8 @@ void draw_sprite(
     void *source_data,
     int16_t source_data_width,
     int16_t source_data_height,
-    void *screen_buffer
+    void *screen_buffer,
+    int16_t empty_pixels_on_right
 );
 
 #endif

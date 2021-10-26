@@ -14,6 +14,7 @@ ground_sprite_type ground_sprite_types[] = {
                 <?php echo($size['origin_y']); ?>,
                 <?php echo($size['source_data_width']); ?>,
                 <?php echo($size['source_data_height']); ?>,
+                <?php echo($size['empty_pixels_on_right']); ?>,
                 ( int16_t[] ){ <?php echo implode(', ', $size['words']); ?> }
             }<?php if ($sizeKey !== array_key_last($type['sprites'])) { ?>,<?php } ?>
             <?php } ?>

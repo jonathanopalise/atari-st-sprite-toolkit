@@ -18,7 +18,6 @@ empty_pixels_on_right:
 additional_word_added:
     dc.w 0
 
-
 sprite_jump_table:
     dc.l 0 ; should never be used
     dc.l draw_eight_line_chunks    ; 16 wide
@@ -26,7 +25,6 @@ sprite_jump_table:
     dc.l draw_two_line_chunks    ; 48 wide
 
 _draw_sprite:
-
 
     ; inputs:
 
@@ -78,6 +76,7 @@ _draw_sprite:
     move.l sp,a0
     movem.l d2-d7/a2-a6,-(sp)
 
+foo:
     moveq.l #0,d1
     move.w 18(a0),d1 ; source_data_width
     asr.w #4,d1
@@ -114,10 +113,11 @@ _draw_sprite:
 
     move.l a3,d0                       ; get desired xpos of scenery object
     and.l #$f,d0                       ; convert to skew value for blitter
-    cmp.w empty_pixels_on_right,d0
-    ble.s zeroskew
+    ;cmp.w empty_pixels_on_right,d0
 
-    ;beq.s zeroskew
+    cmp.w #0,d0
+    beq.s noadditionalrightwords
+    ;ble.s noadditionalrightwords
 
     move.w d2,d0                       ; get starting position in blocks of 16 pixels
     add.w d4,d0                        ; add number of 16 pixel blocks to be drawn
@@ -127,13 +127,13 @@ _draw_sprite:
 
     addq.w #1,d4                        ; add another 16 pixel block to account for skew
     move.w #1,additional_word_added
-    bra.s zeroskew
+    bra.s noadditionalrightwords
 
 setrightclipped:
 
     move.w    #$ffff,rightclipped
 
-zeroskew:
+noadditionalrightwords:
 
     tst.w     d2                       ; set flags for d2
     bpl.s     label_7a32c              ; jump when no left clipping required
@@ -242,24 +242,23 @@ label_7a374:
 
     move.w d5,($ffff8a20).w   ; source x increment | TODO: #10 for 4bpp and #8 for 3bpp
     move.w #8,($ffff8a2e).w    ; dest x increment
-    move.w #$201,($ffff8a3a).w ; hop/op: read from source, source & destination
 
     move.l a3,d0               ; get desired xpos of scenery object
     and.w #$f,d0               ; convert to skew value for blitter
 
     move.w d0,d1
-    ;beq.s nonfsr               ; if skew is zero, we can't use nfsr
+    beq.s nonfsr               ; if skew is zero, we can't use nfsr
 
-    ;cmp.w #1,d4
-    ;beq.s nonfsr
+    cmp.w #1,d4
+    beq.s nonfsr
 
-    ;tst.w rightclipped
-    ;bne.s nonfsr
+    tst.w rightclipped
+    bne.s nonfsr
 
-    ;add.w d5,d7               ; TODO: #10 for 4bpp, #8 for 3bpp
-    ;or.b #$40,d1
+    add.w d5,d7               ; TODO: #10 for 4bpp, #8 for 3bpp
+    or.b #$40,d1
 
-;nonfsr:
+nonfsr:
 
     tst.w leftclipped
     beq.s nofxsr
@@ -309,14 +308,29 @@ nocalcendmask1:
     move.w rightclipped(pc),d1
     bne.s nocalcendmask3                ; branch if zero flag not set
 
-    tst.w additional_word_added
-    bne.s normalendmask3
+    ; we need something here to modify d0 in accordance with the value of 
 
-    move.w #$ffff,($ffff8a2c).w            ; endmask3
+    ;tst.w additional_word_added
+    ;bne.s noupdateendmask3
 
+    move.w #$0,($ffff8a2c).w
     bra.s blitterstart
 
-normalendmask3:
+    ;lsr.w #1,d0 ; d0 back to skew offset
+
+    ;move.w #16,a3
+    ;sub.w empty_pixels_on_right,a3
+    ;add.w a3,d0
+    ;add.w d0,d0
+    
+    ;add.w empty_pixels_on_right,d0
+    ;cmp.w #15,d0
+    ;ble.s noreset
+    ;sub.w #16,d0
+    ;add.w d0,d0
+
+noupdateendmask3:
+
     lea.l rightendmasks(pc),a3
     move.w (a3,d0.w),d1
 
@@ -420,7 +434,9 @@ draw_one_line_chunks:
 
 draw_now:
     move.b #$c0,d6                      ; blitter start instruction
+    ;bra.s colour_now
 
+    move.w #$201,($ffff8a3a).w ; hop/op: read from source, source & destination
     rept 3
     bsr.s drawsceneryplane
     addq.l #2,a1                        ; move to next bitplane
@@ -428,7 +444,9 @@ draw_now:
     bsr.s drawsceneryplane
 
     subq.l #6,a1                        ; move destination back to initial bitplane
-    move.w #$0207,($ffff8a3a).w         ; hop/op: read from source, source | destination
+
+colour_now:
+    move.w #$0203,($ffff8a3a).w         ; hop/op: read from source, source | destination
 
     addq.l #2,a0                        ; move source to next bitplane
     bsr.s drawsceneryplane
@@ -448,9 +466,6 @@ draw_now:
     bsr.s drawsceneryplane
 
 alldone:
-    ;nop
-    ;bra.s alldone
-
     movem.l (sp)+,d2-d7/a2-a6
 
     rts

@@ -131,6 +131,10 @@ foreach ($typeDefinitions as $typeDefinition) {
         $scaledIndexedBitmap = $typeIndexedBitmap->getScaledCopy($scaledWidth, $scaledHeight)
             ->getCopyRoundedTo16PixelDivisibleWidth();
 
+        $emptyPixelsOnRight = $scaledIndexedBitmap->getWidth() - $scaledWidth;
+        //$emptyPixelsOnRight = 0;
+        echo("emptyPixelsOnRight = " . $emptyPixelsOnRight . "\n");
+
         //echo("Rounded width is ". $scaledIndexedBitmap->getWidth(). "\n");
 
         $maskedSprite = SpriteConvertor::createMaskedSprite($scaledIndexedBitmap);
@@ -142,6 +146,7 @@ foreach ($typeDefinitions as $typeDefinition) {
             'origin_y' => $scaledIndexedBitmap->getOriginY(),
             'source_data_width' => $maskedSprite->getWidth(),
             'source_data_height' => $maskedSprite->getHeight(),
+            'empty_pixels_on_right' => $emptyPixelsOnRight,
             'words' => $planarData->getWords(),
         ];
 

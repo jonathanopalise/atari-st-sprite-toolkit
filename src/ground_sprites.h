@@ -9,6 +9,7 @@ typedef struct {
     int16_t origin_y;
     int16_t source_data_width;
     int16_t source_data_height;
+    int16_t empty_pixels_on_right;
     int16_t *words;
 } ground_sprite;
 

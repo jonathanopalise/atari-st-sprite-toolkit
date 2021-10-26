@@ -21,7 +21,8 @@ void draw_ground_sprite(uint16_t sprite_index, int16_t xpos, int16_t ypos, uint1
         selected_ground_sprite->words,
         selected_ground_sprite->source_data_width,
         selected_ground_sprite->source_data_height,
-        screenBuffer
+        screenBuffer,
+        selected_ground_sprite->empty_pixels_on_right
     );
 }
 
@@ -188,7 +189,7 @@ void main_supervisor() {
         world.camera_world_x = car_x - sin_table[world.camera_yaw];
         world.camera_world_z = car_z - cos_table[world.camera_yaw];
 
-        track_position += 200;
+        track_position += 100;
         if (track_position > world.log_count * 600) {
             track_position -= (world.log_count * 600);
         }
@@ -198,6 +199,8 @@ void main_supervisor() {
             project_entity(vis_entity, &world, sin_table, cos_table);
 
             if (vis_entity->transformed_world_z > 50) {
+                // distance could be 0 - 16384
+                // so here we are doing 400/transformed_world_z
 
                 size = fixed_div_6_10(400, vis_entity->transformed_world_z);
                 if (size > 255) {

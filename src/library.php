@@ -570,8 +570,12 @@ class SpriteLine
 
         return $shiftedSpriteLine;
     }
-}
 
+    public function getFinalMaskWord()
+    {
+        return $this->getMaskWordAt($this->getWidthInWords() - 1);
+    }
+}
 
 class SpriteBuilder
 {
@@ -708,6 +712,23 @@ class Sprite
             $this->masked,
             $words
         );
+    }
+
+    public function getEmptyPixelsOnRight()
+    {
+        $cumulativeFinalMaskWord = 0xffff;
+        foreach ($this->spriteLines as $spriteLine) {
+            $cumulativeFinalMaskWord &= $spriteLine->getFinalMaskWord();
+        }
+
+        $currentEmptyPixelsCount = 0;
+        while (true) {
+            if (($cumulativeFinalMaskWord & 1) == 0) {
+                return $currentEmptyPixelsCount;
+            }
+            $currentEmptyPixelsCount++;
+            $cumulativeFinalMaskWord >>= 1;
+        }
     }
 }
 
