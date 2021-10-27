@@ -71,19 +71,7 @@ void main_supervisor() {
 	int joyLeft;
 	int joyRight;
 
-
-
     memcpy((void *)0xffff8240, palette, 32);
-    //uint16_t *physBase;
-    //physBase=Physbase();
-
-    //draw_ground_sprite(0, 20, 180, 16, physBase);
-    //draw_ground_sprite(1, 60, 180, 48, physBase);
-    //draw_ground_sprite(2, 100, 180, 80, physBase);
-    //draw_ground_sprite(3, 140, 180, 112, physBase);
-    //draw_ground_sprite(4, 180, 180, 144, physBase);
-    //draw_ground_sprite(5, 220, 180, 176, physBase);
-    //draw_ground_sprite(6, 10, 180, 208, physBase);
 
     world.camera_world_x = -100;
     world.camera_world_y = -300;
@@ -159,35 +147,6 @@ void main_supervisor() {
         } else if (world.camera_yaw < 0) {
             world.camera_yaw += 1024;
         }
-
-        // if the difference between entity_yaw and next_entity>yaw is greater than 512
-        // then we have probably wrapped
-        //
-        // what to do in this scenario?
-        //
-        // example: entity_yaw = 12, next_entity_yaw = 1014
-        // - yaw_difference = 1002
-        // - (condition: result > 511)
-        // - next_entity_yaw becomes -10 (next_entity_yaw - 1024)
-        // - therefore, lerp calculation is based upon -10 - 12
-        // - resulting lerped value might be less than zero
-        // - if it is, we add 1024
-        //
-        // example: entity_yaw = 1014, next_entity_yaw = 10
-        // - result = - 1004
-        // - (condition: result < -512)
-        // - next_entity_yaw becomes 1034 (next_entity_yaw + 1024)
-        // - therefore, lerp calculation is based upon 1034 - 1014
-        // - resulting lerped value might be greater than 1023
-        // - if it is, we subtract 1024
-
-        // problem happens when next entity yaw is 
-        // e.g. 
-        //   entity_yaw = 4
-        //   next_entity_yaw = 1000
-        //
-        //   we need to work out the shortest way to get from entity_yaw to next_entity_yaw:
-        //     whether to subtract or add
 
         world.camera_world_x = car_x - sin_table[world.camera_yaw];
         world.camera_world_z = car_z - cos_table[world.camera_yaw];

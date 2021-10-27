@@ -5,7 +5,7 @@ VASM_OPTS = -no-opt
 VLINK = vlink
 PHP = php
 
-OBJECT_FILES = src/demo.o src/blitter_sprites.o src/generated/palette.o src/generated/ground_sprites.o src/generated/sin_cos.o src/world.o src/generated/world_data.o src/initialise.o qsort.o
+OBJECT_FILES = src/demo.o src/blitter_sprites.o src/generated/palette.o src/generated/ground_sprites.o src/generated/sin_cos.o src/world.o src/generated/world_data.o src/initialise.o
 ASSETS_GIF = assets/pdrift.gif
 
 bin/demo.prg: $(OBJECT_FILES)
@@ -49,6 +49,4 @@ src/generated/palette.s: $(ASSETS_GIF) src/generate_palette.php
 src/initialise.o: src/initialise.s
 	$(VASM) $(VASM_OPTS) src/initialise.s -Felf -o src/initialise.o
 
-src/qsort.o: src/qsort.c src/qsort.h
-	$(CC) $(CFLAGS) -c src/qsort.c -o src/qsort.o
 
