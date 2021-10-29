@@ -27,6 +27,7 @@ typedef struct {
     int16_t camera_world_y;
     int16_t camera_world_z;
     int16_t camera_yaw;
+    int16_t camera_pitch;
     uint16_t log_count;
     uint16_t entity_count;
     Entity *entities;

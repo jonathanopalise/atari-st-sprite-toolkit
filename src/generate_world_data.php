@@ -24,6 +24,11 @@ class Point
         return $this->x;
     }
 
+    public function setY($y)
+    {
+        $this->y = $y;
+    }
+
     public function getY()
     {
         return $this->y;
@@ -67,15 +72,17 @@ class Point
 class Entity
 {
     private $point;
+    private $height;
     private $type;
     private $appearance;
     private $yaw;
     private $yawRadians;
     private $visibleEntities = [];
 
-    public function __construct(Point $point, $type, $appearance, $yaw, $yawRadians, array $visibleEntities)
+    public function __construct(Point $point, $height, $type, $appearance, $yaw, $yawRadians, array $visibleEntities)
     {
         $this->point = $point;
+        $this->height = $height;
         $this->type = $type;
         $this->appearance = $appearance;
         $this->yaw = $yaw;
@@ -91,6 +98,11 @@ class Entity
     public function getY()
     {
         return $this->point->getY();
+    }
+
+    public function getHeightAsInt()
+    {
+        return intval($this->height);
     }
 
     public function getXAsInt()
@@ -340,7 +352,7 @@ class CubicBezierSequence
 
 class CurveStringParser
 {
-    public function deriveCubicBezierSequence(string $curveString)
+    public function deriveCubicBezierSequence(string $curveString, bool $mustBeLoop)
     {
         $explodedCurveStringElements = explode(' ', $curveString);
 
@@ -366,7 +378,7 @@ class CurveStringParser
             throw new RuntimeException('No coordinates detected');
         }
 
-        if (!($coordinates[0]->equals($coordinates[$coordinatesCount-1]))) {
+        if ($mustBeLoop && !($coordinates[0]->equals($coordinates[$coordinatesCount-1]))) {
             throw new RuntimeException('coordinates do not form a loop');
         }
 
@@ -393,6 +405,42 @@ class CurveStringParser
     }
 }
 
+class GradientHeightCalculator
+{
+    private $points;
+
+    public function __construct(array $points)
+    {
+        $this->points = $points;
+        $minY = null;
+        $maxY = null;
+
+        foreach ($this->points as $point) {
+            $pointY = $point->getY();
+            if (is_null($maxY) || $pointY > $maxY) {
+                $maxY = $pointY;
+            }
+            if (is_null($minY) || $pointY < $minY) {
+                $minY = $pointY;
+            }
+        }
+
+        echo("min y is ".$minY."\n");
+        echo("max y is ".$maxY."\n");
+
+        foreach ($this->points as $point) {
+            $point->setY(
+                $minY - $point->getY()
+            );
+        }
+    }
+
+    public function getHeightAt($index)
+    {
+        return $this->points[$index]->getY();
+    }
+}
+
 class WorldGenerator
 {
     public function deriveWorldFromDomDocument(string $filename)
@@ -402,19 +450,17 @@ class WorldGenerator
             throw new RuntimeException('Unable to load svg file');
         }
 
-        $pathElements = $document->getElementsByTagName('path');
-        if (count($pathElements) != 1) {
-            throw new RuntimeException('Zero or more than one path elements found');
-        }
+        // first do track
 
-        $curveElement = $pathElements[0];
+        $curveElement = $this->getPathElementByid($document, 'track');
+
         $curveString = $curveElement->getAttribute('d');
         if ($curveString == '') {
             throw new RuntimeException('Unable to find track curvature attribute');
         }
 
         $curveStringParser = new CurveStringParser();
-        $cubicBezierSequence = $curveStringParser->deriveCubicBezierSequence($curveString);
+        $cubicBezierSequence = $curveStringParser->deriveCubicBezierSequence($curveString, true);
 
         $cubicBezierSequencePoints = $cubicBezierSequence->getPoints();
 
@@ -425,6 +471,32 @@ class WorldGenerator
 
         $logPoints = $segmentSequence->deriveEvenlySpacedPoints(600);
         $logCount = count($logPoints);
+
+        // then do gradient
+        
+        $gradientElement = $this->getPathElementById($document, 'gradient');
+
+        $curveString = $gradientElement->getAttribute('d');
+        if ($curveString == '') {
+            throw new RuntimeException('Unable to find gradient attribute');
+        }
+
+        $cubicBezierSequence = $curveStringParser->deriveCubicBezierSequence($curveString, false);
+        $cubicBezierSequencePoints = $cubicBezierSequence->getPoints();
+
+        $segmentSequence = new SegmentSequence();
+        foreach ($cubicBezierSequencePoints as $point) {
+            $segmentSequence->addPoint($point);
+        }
+
+        $gradientLength = $segmentSequence->getTotalDistance();
+        $gradientPoints = $segmentSequence->deriveEvenlySpacedPoints($gradientLength / $logCount);
+
+        echo("number of gradient points: ".count($gradientPoints)."\n");
+
+        $gradientHeightCalculator = new GradientHeightCalculator($gradientPoints);
+
+        // end of gradient
 
         $entities = [];
 
@@ -458,7 +530,14 @@ class WorldGenerator
                 $yawInteger -= 1024;
             }
 
-            $entities[] = new Entity($point, ENTITY_TYPE_LOG, 10, $yawInteger, $yaw, []);
+            $pointY = $gradientHeightCalculator->getHeightAt($pointIndex);
+
+            $appearance = 11;
+            if ($pointY < -1) {
+                $appearance = 10;
+            }
+
+            $entities[] = new Entity($point, $pointY, ENTITY_TYPE_LOG, $appearance, $yawInteger, $yaw, []);
         }
 
         $sceneryElements = $document->getElementsByTagName('circle');
@@ -483,6 +562,18 @@ class WorldGenerator
         return $world;
     }
 
+    private function getPathElementById($document, $id)
+    {
+        $pathElements = $document->getElementsByTagName('path');
+        foreach ($pathElements as $pathElement) {
+            if ($pathElement->getAttribute('id') == $id) {
+                return $pathElement;
+            }
+        }
+
+        throw new RuntimeException('Path element with id ' . $id . ' not found');
+    }
+
     private function generateSceneryEntity($element)
     {
         $x = $element->getAttribute('cx');
@@ -494,6 +585,7 @@ class WorldGenerator
 
         return new Entity(
             Point::importFromData($x, $y),
+            0,
             ENTITY_TYPE_SCENERY,
             $appearance,
             0,
@@ -553,7 +645,7 @@ class WorldGenerator
             $visibleEntityOffsets[] = $visibleEntity['offset'];
         }
 
-        var_dump($visibleEntityOffsets);
+        //var_dump($visibleEntityOffsets);
 
         return $visibleEntityOffsets;
     }
@@ -599,6 +691,7 @@ class WorldGenerator
             '#008080' => 6,
             '#00ffff' => 7,
             '#000080' => 8,
+            '#0000ff' => 9,
         ];
 
         $styleElements = explode(';', $style);

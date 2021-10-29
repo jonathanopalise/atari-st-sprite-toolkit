@@ -92,6 +92,7 @@ void main_supervisor() {
     uint32_t *valuePointer;
 
     int16_t car_x;
+    int16_t car_y;
     int16_t car_z;
     int16_t next_entity_yaw;
     int16_t yaw_difference;
@@ -107,13 +108,16 @@ void main_supervisor() {
 
         valuePointer = logBase;
         value = 0x0000ffff;
-        for (index = 0; index < 4000; index++) {
-            *valuePointer = value;
+        for (index = 0; index < 2000; index++) {
+            *valuePointer = 0x00000000;
+            valuePointer++;
+            *valuePointer = 0xffffffff;
             valuePointer++;
         }
-        value = 0xffff0000;
-        for (index = 0; index < 4000; index++) {
-            *valuePointer = value;
+        for (index = 0; index < 2000; index++) {
+            *valuePointer = 0x00000000;
+            valuePointer++;
+            *valuePointer = 0xffff0000;
             valuePointer++;
         }
 
@@ -129,6 +133,7 @@ void main_supervisor() {
         next_entity = &world.entities[next_log_index];
 
         car_x = entity->world_x + ((next_entity->world_x - entity->world_x) * offset_within_log / 600);
+        car_y = entity->world_y + ((next_entity->world_y - entity->world_y) * offset_within_log / 600);
         car_z = entity->world_z + ((next_entity->world_z - entity->world_z) * offset_within_log / 600);
         //world.camera_yaw = entity->yaw + ((next_entity->yaw - entity->yaw) * offset_within_log / 600);
         
@@ -141,6 +146,7 @@ void main_supervisor() {
             next_entity_yaw = next_entity->yaw;
         }
 
+        //world.camera_pitch = 50;
         world.camera_yaw = entity->yaw + ((next_entity_yaw - entity->yaw) * offset_within_log / 600);
         if (world.camera_yaw > 1023) {
             world.camera_yaw -= 1024;
@@ -149,11 +155,26 @@ void main_supervisor() {
         }
 
         world.camera_world_x = car_x - sin_table[world.camera_yaw];
+        world.camera_world_y = car_y - 300;
         world.camera_world_z = car_z - cos_table[world.camera_yaw];
 
-        track_position += 400;
-        if (track_position > world.log_count * 600) {
-            track_position -= (world.log_count * 600);
+        if (joyRight) {
+            track_position += 25;
+            if (track_position > world.log_count * 600) {
+                track_position -= (world.log_count * 600);
+            }
+        }
+
+        if (joyUp) {
+            world.camera_pitch++;
+            if (world.camera_pitch > 1023) {
+                world.camera_pitch -= 1024;
+            }
+        } else if (joyDown) {
+            world.camera_pitch--;
+            if (world.camera_pitch < 0) {
+                world.camera_pitch += 1024;
+            }
         }
 
         for (int index = 0; index < entity->visible_entities_length; index++) {

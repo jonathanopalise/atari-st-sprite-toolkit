@@ -104,6 +104,14 @@ $typeDefinitions = [
         'height' => 30,
         'masked' => false,
     ],
+    [
+        'label' => 'log2',
+        'left' => 263,
+        'top' => 401,
+        'width' => 244,
+        'height' => 30,
+        'masked' => false,
+    ],
 ];
 
 $scaleFactors = [];
@@ -119,7 +127,7 @@ $types = [];
 foreach ($typeDefinitions as $typeDefinition) {
     echo("generating data for sprite '".$typeDefinition['label']."'...\n");
 
-    if ($typeDefinition['label'] == 'log') {
+    if ($typeDefinition['label'] == 'log' || $typeDefinition['label'] == 'log2') {
         $originY = 0;
     } else {
         $originY = $typeDefinition['height'] - 1;

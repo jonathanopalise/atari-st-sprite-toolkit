@@ -8,7 +8,7 @@ World world = {
         <?php $entities = $world->getEntities(); foreach ($world->getEntities() as $entityKey => $entity) { ?>
         {
             .world_x = <?php echo($entity->getXAsInt()); ?>,
-            .world_y = 0,
+            .world_y = <?php echo($entity->getHeightAsInt()); ?>,
             .world_z = <?php echo($entity->getYAsInt()); ?>,
             .type = <?php echo($entity->getType()); ?>,
             .appearance = <?php echo($entity->getAppearance()); ?>,

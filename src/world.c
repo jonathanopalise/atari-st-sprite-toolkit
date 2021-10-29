@@ -37,6 +37,7 @@ void transform_and_rotate_world(World *world, int16_t *sin, int16_t *cos)
 void project_entity(Entity *entity, World *world, int16_t *sin, int16_t *cos)
 {
     int16_t entity_world_x;
+    int16_t entity_world_y;
     int16_t entity_world_z;
 
     entity->transformed_world_x = entity->world_x - world->camera_world_x;
@@ -48,6 +49,12 @@ void project_entity(Entity *entity, World *world, int16_t *sin, int16_t *cos)
 
     entity->transformed_world_x = fixed_mul_6_10(entity_world_x,cos[world->camera_yaw]) - fixed_mul_6_10(entity_world_z,sin[world->camera_yaw]);
     entity->transformed_world_z = fixed_mul_6_10(entity_world_z,cos[world->camera_yaw]) + fixed_mul_6_10(entity_world_x,sin[world->camera_yaw]);
+
+    entity_world_y = entity->transformed_world_y;
+    entity_world_z = entity->transformed_world_z;
+
+    entity->transformed_world_y = fixed_mul_6_10(entity_world_y,cos[world->camera_pitch]) - fixed_mul_6_10(entity_world_z,sin[world->camera_pitch]);
+    entity->transformed_world_z = fixed_mul_6_10(entity_world_z,cos[world->camera_pitch]) + fixed_mul_6_10(entity_world_y,sin[world->camera_pitch]);
 
     entity->screen_x = ((fixed_div_6_10(entity->transformed_world_x, entity->transformed_world_z)) / 3)+ 160;
     entity->screen_y = ((fixed_div_6_10(entity->transformed_world_y, entity->transformed_world_z)) / 3) + 100;

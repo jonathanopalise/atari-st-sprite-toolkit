@@ -104,6 +104,8 @@ _draw_sprite:
 
     move.l d5,d7
     add.l d3,d7
+    tst.w d3
+    beq alldone
 
     move.l 24(a0),a1 ; screen buffer
     move.w 30(a0),empty_pixels_on_right
@@ -163,9 +165,13 @@ label_7a32c:
                                        ; at this point, top is being clipped
     tst.w     d7                       ; is the bottom of the sprite off screen too?
     bmi     alldone                  ; if so, nothing to draw
+
     move.w    d5,d0
     moveq     #0,d5
     add.w     d0,d3
+    tst.w     d3
+    beq alldone
+
     add.w     d0,d0
     muls.w    d1,d0
     suba.w    d0,a0
