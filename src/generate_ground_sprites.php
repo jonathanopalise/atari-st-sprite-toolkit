@@ -102,7 +102,7 @@ $typeDefinitions = [
         'top' => 451,
         'width' => 241,
         'height' => 35,
-        'masked' => true,
+        'masked' => false,
     ],
     [
         'label' => 'log2',
@@ -110,7 +110,7 @@ $typeDefinitions = [
         'top' => 401,
         'width' => 244,
         'height' => 35,
-        'masked' => true,
+        'masked' => false,
     ],
 ];
 
