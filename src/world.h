@@ -35,9 +35,9 @@ typedef struct {
 
 int16_t fixed_div_6_10(int16_t x, int16_t y);
 
-void transform_and_rotate_world(World *world, int16_t *sin, int16_t *cos);
-
 void project_entity(Entity *entity, World *world, int16_t *sin, int16_t *cos);
+
+int16_t get_horizon_level(World *world, int16_t *sin, int16_t *cos);
 
 #endif
  

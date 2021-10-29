@@ -101,16 +101,16 @@ $typeDefinitions = [
         'left' => 265,
         'top' => 451,
         'width' => 241,
-        'height' => 30,
-        'masked' => false,
+        'height' => 35,
+        'masked' => true,
     ],
     [
         'label' => 'log2',
         'left' => 263,
         'top' => 401,
         'width' => 244,
-        'height' => 30,
-        'masked' => false,
+        'height' => 35,
+        'masked' => true,
     ],
 ];
 

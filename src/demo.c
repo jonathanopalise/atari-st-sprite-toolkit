@@ -70,6 +70,7 @@ void main_supervisor() {
 	int joyDown;
 	int joyLeft;
 	int joyRight;
+    int joyFire;
 
     memcpy((void *)0xffff8240, palette, 32);
 
@@ -96,6 +97,9 @@ void main_supervisor() {
     int16_t car_z;
     int16_t next_entity_yaw;
     int16_t yaw_difference;
+    int16_t horizon_level;
+    int16_t sky_lines;
+    int16_t ground_lines;
 
     yaw = 0;
     track_position = 0;
@@ -105,21 +109,7 @@ void main_supervisor() {
         joyDown=joy_data&2;
         joyLeft=joy_data&4;
         joyRight=joy_data&8;
-
-        valuePointer = logBase;
-        value = 0x0000ffff;
-        for (index = 0; index < 2000; index++) {
-            *valuePointer = 0x00000000;
-            valuePointer++;
-            *valuePointer = 0xffffffff;
-            valuePointer++;
-        }
-        for (index = 0; index < 2000; index++) {
-            *valuePointer = 0x00000000;
-            valuePointer++;
-            *valuePointer = 0xffff0000;
-            valuePointer++;
-        }
+        joyFire=(joy_data>>7)&1;
 
         log_index = track_position / 600;
         offset_within_log = track_position % 600;
@@ -158,22 +148,53 @@ void main_supervisor() {
         world.camera_world_y = car_y - 300;
         world.camera_world_z = car_z - cos_table[world.camera_yaw];
 
-        if (joyRight) {
-            track_position += 25;
+        if (joyFire) {
+            track_position += 200;
             if (track_position > world.log_count * 600) {
                 track_position -= (world.log_count * 600);
             }
         }
 
         if (joyUp) {
-            world.camera_pitch++;
+            world.camera_pitch += 3;
             if (world.camera_pitch > 1023) {
                 world.camera_pitch -= 1024;
             }
         } else if (joyDown) {
-            world.camera_pitch--;
+            world.camera_pitch -= 3;
             if (world.camera_pitch < 0) {
                 world.camera_pitch += 1024;
+            }
+        }
+
+        horizon_level = get_horizon_level(&world, sin_table, cos_table);
+        valuePointer = logBase;
+        value = 0x0000ffff;
+        sky_lines = horizon_level;
+        ground_lines = 200 - horizon_level;
+        if (sky_lines > 0) {
+            if (sky_lines > 200) {
+                sky_lines = 200;
+            }
+            for (index = 0; index < 20 * sky_lines; index++) {
+                // 2 long words per loop iteration, 8 bytes
+                // 160 bytes per line
+                // 20 iterat
+                *valuePointer = 0x00000000;
+                valuePointer++;
+                *valuePointer = 0xffffffff;
+                valuePointer++;
+            }
+        }
+        if (ground_lines > 0) {
+            if (ground_lines > 200) {
+                ground_lines = 200;
+            }
+            for (index = 0; index < 20 * ground_lines; index++) {
+                *valuePointer = 0x00000000;
+                valuePointer++;
+                *valuePointer = 0xffff0000;
+                valuePointer++;
             }
         }
 
@@ -181,7 +202,7 @@ void main_supervisor() {
             vis_entity = &world.entities[entity->visible_entities[index]];
             project_entity(vis_entity, &world, sin_table, cos_table);
 
-            if (vis_entity->transformed_world_z > 50) {
+            if (vis_entity->transformed_world_z > 20) {
                 // distance could be 0 - 16384
                 // so here we are doing 400/transformed_world_z
 
