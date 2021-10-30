@@ -183,7 +183,7 @@ void main_supervisor() {
                 // 2 long words per loop iteration, 8 bytes
                 // 160 bytes per line
                 // 20 iterat
-                *valuePointer = 0x00000000;
+                *valuePointer = 0xffffffff;
                 valuePointer++;
                 *valuePointer = 0xffffffff;
                 valuePointer++;
@@ -194,9 +194,9 @@ void main_supervisor() {
                 ground_lines = 200;
             }
             for (index = 0; index < 20 * ground_lines; index++) {
-                *valuePointer = 0x00000000;
+                *valuePointer = 0xffffffff;
                 valuePointer++;
-                *valuePointer = 0xffff0000;
+                *valuePointer = 0xffffffff;
                 valuePointer++;
             }
         }
