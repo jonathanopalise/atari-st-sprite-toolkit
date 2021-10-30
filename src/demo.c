@@ -10,6 +10,7 @@
 #include "world.h"
 #include "world_data.h"
 #include "initialise.h"
+#include "screen_buffers.h"
 
 void draw_ground_sprite(uint16_t sprite_index, int16_t xpos, int16_t ypos, uint16_t desired_scale_factor, void *screenBuffer)
 {
@@ -37,9 +38,7 @@ Entity *visible_entity_pointers[300];
 Entity **current_visible_entity_pointer;
 int visible_entity_count;
 
-void framebuffer_open() {
-    //__asm__ __volatile__("move.w #0x2700,%sr");
-
+/*void framebuffer_open() {
     physBase=Physbase();
     logBase=physBase-0x4000;
     memset(logBase,0,32000);
@@ -52,7 +51,7 @@ void framebuffer_flip() {
     physBase=logBase;
     logBase=tmp;
     Setscreen(logBase,physBase,-1);
-}
+}*/
 
 int compare_function(const void *entity1, const void *entity2)
 {
@@ -63,14 +62,16 @@ int compare_function(const void *entity1, const void *entity2)
 }
 
 void main_supervisor() {
+    screen_buffers_init();
     initialise();
-    framebuffer_open();
+    //framebuffer_open();
 
 	int joyUp;
 	int joyDown;
 	int joyLeft;
 	int joyRight;
     int joyFire;
+    uint16_t log_base;
 
     memcpy((void *)0xffff8240, palette, 32);
 
@@ -167,6 +168,8 @@ void main_supervisor() {
             }
         }
 
+        logBase = screen_buffers_get_drawing_address();
+
         horizon_level = get_horizon_level(&world, sin_table, cos_table);
         valuePointer = logBase;
         value = 0x0000ffff;
@@ -222,7 +225,8 @@ void main_supervisor() {
 
         } 
 
-        framebuffer_flip();
+        screen_buffers_frame_complete();
+        //framebuffer_flip();
     }
 }
 
