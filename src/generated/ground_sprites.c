@@ -704,7 +704,7 @@ ground_sprite_type ground_sprite_types[] = {
     },        {
         // log
         8,
-        0,
+        1,
         (ground_sprite[]) {
                         {
                 31,
@@ -774,7 +774,7 @@ ground_sprite_type ground_sprite_types[] = {
     },        {
         // log2
         8,
-        0,
+        1,
         (ground_sprite[]) {
                         {
                 31,

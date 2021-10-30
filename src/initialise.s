@@ -208,7 +208,7 @@ new_raster_routine:
     rte
 
 substitute_70684:
-    move.w    #$0f00,$ffff825e.w
+    move.w    #$40,$ffff825e.w
     rte
 
 final_bar:
@@ -247,7 +247,7 @@ p1_new_routine_after_vector:
 p1_initialise_sky:
     ; TODO: what to do here?
     ;move.w d0,$70668 ; number of lines between top of screen and first interrupt trigger!
-    move.w #40,d0
+    move.w #30,d0 ; so this is the height of the horizon in pixels / benchmark value is 64
 
     move.b d0,d1
     move.b d1,p1_sky_line_count
@@ -260,9 +260,13 @@ p1_initialise_sky_variables:
 
     move.l #substitute_70684,p1_final_bar_vector_instruction_plus_2
     ; TODO: what to do here?
-    move.w #-10,d0 ; gradient_y_at_screen_top TODO TEST VALUE
-    asr.w #1,d0
-    add.w #21,d0
+
+    neg.w d0
+    add.w #60,d0
+
+    ;move.w #-24,d0 ; gradient_y_at_screen_top / benchmark value is 0
+    ;asr.w #1,d0
+    ;add.w #21,d0
 
     move.w d0,d1
     move.w d0,d3 ; copy gradient_y_at_screen_top
