@@ -8,7 +8,7 @@ _initialise:
         move.l ($118),a0
         move.l a0,(oldikbd)
 
-		move.l	#dummy,$70.w			;Install our own VBL
+		move.l	#vbl,$70.w			;Install our own VBL
 		move.l	#dummy,$68.w			;Install our own HBL (dummy)
 		move.l	#dummy,$134.w			;Install our own Timer A (dummy)
 		move.l	#dummy,$120.w			;Install our own Timer B
@@ -40,6 +40,12 @@ read_joy:
 
 dummy:
 	rte
+
+vbl:
+    movem.l d0-d7/a0-a6,-(sp)
+    jsr _screen_buffers_handle_vbl
+    movem.l (sp)+,d0-d7/a0-a6
+    rte
 
 newikbd:
     move d0,-(sp)
