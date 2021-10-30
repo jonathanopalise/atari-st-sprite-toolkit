@@ -1,5 +1,6 @@
     public _initialise
     public _joy_data
+    public _p1_initialise_sky
 
 _initialise:
 
@@ -116,6 +117,7 @@ timer_b:
 vbl:
     movem.l d0-d7/a0-a6,-(sp)
     jsr _screen_buffers_handle_vbl
+    ;jsr p1_initialise_sky
 
         move.w  #$2700,sr         ;Stop all interrupts
         move.l  #timer_1,$120.w            ;Install our own Timer B
@@ -127,7 +129,6 @@ vbl:
         ;move.b  #8,$fffffa1b.w         ;Timer B control (event mode (
         move.w  #$2300,sr         ;Interrupts back on
 
-    jsr p1_initialise_sky
     jsr p1_raster_routine
 
 
@@ -244,10 +245,15 @@ p1_new_routine_after_lines:
 p1_new_routine_after_vector:
     dc.l $0
 
-p1_initialise_sky:
+_p1_initialise_sky:
     ; TODO: what to do here?
     ;move.w d0,$70668 ; number of lines between top of screen and first interrupt trigger!
-    move.w #30,d0 ; so this is the height of the horizon in pixels / benchmark value is 64
+    ;move.w #100,d0 ; so this is the height of the horizon in pixels / benchmark value is 64
+    move.w 6(sp),d0
+
+;boo:
+;    nop
+;    bra.s boo
 
     move.b d0,d1
     move.b d1,p1_sky_line_count

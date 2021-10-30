@@ -101,6 +101,7 @@ void main_supervisor() {
     int16_t horizon_level;
     int16_t sky_lines;
     int16_t ground_lines;
+    ScreenBuffer *drawing_screen_buffer;
 
     yaw = 0;
     track_position = 0;
@@ -168,10 +169,13 @@ void main_supervisor() {
             }
         }
 
-        logBase = screen_buffers_get_drawing_address();
+        drawing_screen_buffer = screen_buffers_get_drawing();
+        logBase = drawing_screen_buffer->address;
+        //logBase = screen_buffers_get_drawing_address();
 
         horizon_level = get_horizon_level(&world, sin_table, cos_table);
-        valuePointer = logBase;
+        drawing_screen_buffer->horizon_ypos = get_horizon_level(&world, sin_table, cos_table);
+        /*valuePointer = logBase;
         value = 0x0000ffff;
         sky_lines = horizon_level;
         ground_lines = 200 - horizon_level;
@@ -199,6 +203,12 @@ void main_supervisor() {
                 *valuePointer = 0xffffffff;
                 valuePointer++;
             }
+        }*/
+
+        valuePointer = logBase;
+        for (index = 0; index < 40 * 200; index++) {
+            *valuePointer = 0xffffffff;
+            valuePointer++;
         }
 
         for (int index = 0; index < entity->visible_entities_length; index++) {

@@ -1,4 +1,7 @@
+#include <mint/osbind.h>
+#include <mint/sysbind.h>
 #include "screen_buffers.h"
+#include "initialise.h"
 
 #define SCREEN_BUFFERS_COUNT 3
 
@@ -25,6 +28,7 @@ void screen_buffers_handle_vbl()
 	if (ready_index >= 0) {
 		visible_index = ready_index;
 		ready_index = -1;
+        p1_initialise_sky(screen_buffers[visible_index].horizon_ypos);
 		Setscreen(
             screen_buffers[drawing_index].address,
             screen_buffers[visible_index].address,
@@ -51,9 +55,9 @@ void screen_buffers_frame_complete()
     }
 }
 
-uint16_t *screen_buffers_get_drawing_address()
+ScreenBuffer *screen_buffers_get_drawing()
 {
-    return screen_buffers[drawing_index].address;
+    return &screen_buffers[drawing_index];
 }
 
 
