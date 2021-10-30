@@ -116,18 +116,19 @@ timer_b:
 vbl:
     movem.l d0-d7/a0-a6,-(sp)
     jsr _screen_buffers_handle_vbl
-    ;jsr p1_initialise_sky
-    ;jsr p1_raster_routine
 
         move.w  #$2700,sr         ;Stop all interrupts
         move.l  #timer_1,$120.w            ;Install our own Timer B
         clr.b   $fffffa1b.w            ;Timer B control (stop)
         bset    #0,$fffffa07.w         ;Interrupt enable A (Timer B)
         bset    #0,$fffffa13.w         ;Interrupt mask A (Timer B)
-        move.b  #22,$fffffa21.w            ;Timer B data (number of s
+        ;move.b  #22,$fffffa21.w            ;Timer B data (number of s
         bclr    #3,$fffffa17.w         ;Automatic end of interrupt
-        move.b  #8,$fffffa1b.w         ;Timer B control (event mode (
+        ;move.b  #8,$fffffa1b.w         ;Timer B control (event mode (
         move.w  #$2300,sr         ;Interrupts back on
+
+    jsr p1_initialise_sky
+    jsr p1_raster_routine
 
 
     movem.l (sp)+,d0-d7/a0-a6
@@ -246,7 +247,7 @@ p1_new_routine_after_vector:
 p1_initialise_sky:
     ; TODO: what to do here?
     ;move.w d0,$70668 ; number of lines between top of screen and first interrupt trigger!
-    move.w #20,d0
+    move.w #40,d0
 
     move.b d0,d1
     move.b d1,p1_sky_line_count
