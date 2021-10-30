@@ -74,10 +74,10 @@ $typeDefinitions = [
     ],
     [
         'label' => 'tree_rustic',
-        'left' => 305,
-        'top' => 10,
-        'width' => 155,
-        'height' => 112,
+        'left' => 467,
+        'top' => 192,
+        'width' => 36,
+        'height' => 192,
         'masked' => true,
     ],
     [
@@ -110,6 +110,14 @@ $typeDefinitions = [
         'top' => 401,
         'width' => 244,
         'height' => 35,
+        'masked' => true,
+    ],
+    [
+        'label' => 'kart',
+        'left' => 362,
+        'top' => 667,
+        'width' => 103,
+        'height' => 43,
         'masked' => true,
     ],
 ];

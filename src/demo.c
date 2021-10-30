@@ -103,6 +103,8 @@ void main_supervisor() {
     int16_t ground_lines;
     ScreenBuffer *drawing_screen_buffer;
 
+    Entity car_entity;
+
     yaw = 0;
     track_position = 0;
 
@@ -128,7 +130,7 @@ void main_supervisor() {
         car_y = entity->world_y + ((next_entity->world_y - entity->world_y) * offset_within_log / 600);
         car_z = entity->world_z + ((next_entity->world_z - entity->world_z) * offset_within_log / 600);
         //world.camera_yaw = entity->yaw + ((next_entity->yaw - entity->yaw) * offset_within_log / 600);
-        
+
         yaw_difference = next_entity->yaw - entity->yaw;
         if (yaw_difference > 511) {
             next_entity_yaw = next_entity->yaw - 1024;
@@ -151,7 +153,7 @@ void main_supervisor() {
         world.camera_world_z = car_z - cos_table[world.camera_yaw];
 
         if (joyFire) {
-            track_position += 200;
+            track_position += 400;
             if (track_position > world.log_count * 600) {
                 track_position -= (world.log_count * 600);
             }
@@ -234,6 +236,19 @@ void main_supervisor() {
             }
 
         } 
+
+        car_entity.world_x = car_x;
+        car_entity.world_y = car_y;
+        car_entity.world_z = car_z;
+        project_entity(&car_entity, &world, sin_table, cos_table);
+
+        draw_ground_sprite(
+                12,
+                car_entity.screen_x,
+                car_entity.screen_y,
+                255,
+                logBase
+        );
 
         screen_buffers_frame_complete();
         //framebuffer_flip();
