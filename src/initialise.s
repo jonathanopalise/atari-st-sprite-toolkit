@@ -12,7 +12,7 @@ _initialise:
 		move.l	#vbl,$70.w			;Install our own VBL
 		move.l	#dummy,$68.w			;Install our own HBL (dummy)
 		move.l	#dummy,$134.w			;Install our own Timer A (dummy)
-        move.l  #timer_1,$120.w            ;Install our own Timer B
+        ;move.l  #timer_1,$120.w            ;Install our own Timer B
 		;move.l	#dummy,$120.w			;Install our own Timer B
 		move.l	#dummy,$114.w			;Install our own Timer C (dummy)
 		move.l	#dummy,$110.w			;Install our own Timer D (dummy)
@@ -43,75 +43,6 @@ read_joy:
 dummy:
 	rte
 
-timer_1:
-        move.w  #$2700,sr         ;Stop all interrupts
-        move.l  #timer_2,$120.w            ;Install our own Timer B
-        move.b  #8,$fffffa1b.w         ;Timer B control (event mode (HBL))
-        move.w #$1c7,$ffff825e.w ; colour 10 = 474 hud laptime
-        move.w  #$2300,sr         ;Interrupts back on
-     rte
-
-timer_2:
-        move.w  #$2700,sr         ;Stop all interrupts
-        move.l  #timer_3,$120.w            ;Install our own Timer B
-        move.b  #8,$fffffa1b.w         ;Timer B control (event mode (HBL))
-        move.w #$157,$ffff825e.w ; colour 10 = 474 hud laptime
-        move.w  #$2300,sr         ;Interrupts back on
-     rte
-
-timer_3:
-        move.w  #$2700,sr         ;Stop all interrupts
-        move.l  #timer_b,$120.w            ;Install our own Timer B
-        move.b  #8,$fffffa1b.w         ;Timer B control (event mode (HBL))
-        move.w #$0235,$ffff8248.w ; colour 4 - new fuji colour
-        move.w #$1d7,$ffff825e.w ; colour 10 = 474 hud laptime
-        move.w  #$2300,sr         ;Interrupts back on
-     rte
-
-timer_4:
-        move.w  #$2700,sr         ;Stop all interrupts
-        move.l  #timer_b,$120.w            ;Install our own Timer B
-        move.b  #8,$fffffa1b.w         ;Timer B control (event mode (HBL))
-        move.w #$666,$ffff825e.w ; colour 10 = 474 hud laptime
-        move.w  #$2300,sr         ;Interrupts back on
-     rte
-
-timer_5:
-        move.w  #$2700,sr         ;Stop all interrupts
-        move.l  #timer_6,$120.w            ;Install our own Timer B
-        clr.b   $fffffa1b.w            ;Timer B control (stop)
-        move.b  #10,$fffffa21.w            ;Timer B data (number of scanlines to next interrupt)
-        move.b  #8,$fffffa1b.w         ;Timer B control (event mode (HBL))
-        move.w  #$2300,sr         ;Interrupts back on
-     rte
-
-timer_6:
-        move.w  #$2700,sr         ;Stop all interrupts
-        move.l  #timer_7,$120.w            ;Install our own Timer B
-        clr.b   $fffffa1b.w            ;Timer B control (stop)
-        move.b  #10,$fffffa21.w            ;Timer B data (number of sc
-        move.b  #8,$fffffa1b.w         ;Timer B control (event mode (H
-        move.w  #$2300,sr         ;Interrupts back on
-     rte
-
-timer_7:
-        move.w  #$2700,sr         ;Stop all interrupts
-        move.l  #timer_b,$120.w            ;Install our own Timer B
-        clr.b   $fffffa1b.w            ;Timer B control (stop)
-        move.b  #10,$fffffa21.w            ;Timer B data (number of sc
-        move.b  #8,$fffffa1b.w         ;Timer B control (event mode (H
-        move.w  #$2300,sr         ;Interrupts back on
-     rte
-
-timer_b:
-        move.l #$02510125,$ffff8242.w
-        move.l #$02220137,$ffff8246.w
-        move.w #$555,$ffff825e.w ; colour 13 = 555 light grey
-        move.l #$00070400,$ffff825c.w
-        ;move.w #$750,$ffff8254.w ; colour 10 = 750 light orange
-        clr.b   $fffffa1b.w            ;Timer B control (stop)
-    rte
-
 
 
 vbl:
@@ -120,7 +51,7 @@ vbl:
     ;jsr p1_initialise_sky
 
         move.w  #$2700,sr         ;Stop all interrupts
-        move.l  #timer_1,$120.w            ;Install our own Timer B
+        ;move.l  #timer_1,$120.w            ;Install our own Timer B
         clr.b   $fffffa1b.w            ;Timer B control (stop)
         bset    #0,$fffffa07.w         ;Interrupt enable A (Timer B)
         bset    #0,$fffffa13.w         ;Interrupt mask A (Timer B)
@@ -246,14 +177,7 @@ p1_new_routine_after_vector:
     dc.l $0
 
 _p1_initialise_sky:
-    ; TODO: what to do here?
-    ;move.w d0,$70668 ; number of lines between top of screen and first interrupt trigger!
-    ;move.w #100,d0 ; so this is the height of the horizon in pixels / benchmark value is 64
     move.w 6(sp),d0
-
-;boo:
-;    nop
-;    bra.s boo
 
     move.b d0,d1
     move.b d1,p1_sky_line_count
@@ -265,14 +189,9 @@ p1_initialise_sky_variables:
     movem.l d0-d4/a0,-(sp)
 
     move.l #substitute_70684,p1_final_bar_vector_instruction_plus_2
-    ; TODO: what to do here?
 
     neg.w d0
     add.w #60,d0
-
-    ;move.w #-24,d0 ; gradient_y_at_screen_top / benchmark value is 0
-    ;asr.w #1,d0
-    ;add.w #21,d0
 
     move.w d0,d1
     move.w d0,d3 ; copy gradient_y_at_screen_top
@@ -318,7 +237,6 @@ p1_lines_remaining_greater_than_4:
     move.b d4,p1_raster_count
     move.b d2,p1_final_bar_line_count_instruction_plus_3
     move.l d0,p1_current_gradient_address
-    ; TODO: don't forget these lines below in the new handler
     move.l d0,a0
     move.w    (a0),p1_gradient_start_colour
 
@@ -387,9 +305,6 @@ p1_raster_routine:
     tst.w p1_sky_initialised
     beq.s p1_raster_not_initialised
 
-    ;cmp.w #$684,$70676
-    ;bne.s p1_raster_not_initialised
-
     move.l p1_final_bar_vector_instruction_plus_2(pc),final_bar_vector_instruction+2
     move.b p1_final_bar_line_count_instruction_plus_3(pc),final_bar_line_count_instruction+3
     move.l p1_current_gradient_address(pc),current_gradient_address
@@ -398,13 +313,7 @@ p1_raster_routine:
     move.b p1_new_routine_after_lines(pc),$fffffa21.w ; number of lines
     move.b #8,$fffffa1b.w ; turn on timer b
     move.l p1_new_routine_after_vector(pc),$0120.w
-    ;bclr #0,$fffffa0f.w
-
     rts
-    ; code to keep END
-
-    ;move.b #0,$fffffa1b.w
-    ;jmp $70666
 
 p1_raster_not_initialised:
     rts

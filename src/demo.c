@@ -173,45 +173,11 @@ void main_supervisor() {
 
         drawing_screen_buffer = screen_buffers_get_drawing();
         logBase = drawing_screen_buffer->address;
-        //logBase = screen_buffers_get_drawing_address();
 
         horizon_level = get_horizon_level(&world, sin_table, cos_table);
         drawing_screen_buffer->horizon_ypos = get_horizon_level(&world, sin_table, cos_table);
-        /*valuePointer = logBase;
-        value = 0x0000ffff;
-        sky_lines = horizon_level;
-        ground_lines = 200 - horizon_level;
-        if (sky_lines > 0) {
-            if (sky_lines > 200) {
-                sky_lines = 200;
-            }
-            for (index = 0; index < 20 * sky_lines; index++) {
-                // 2 long words per loop iteration, 8 bytes
-                // 160 bytes per line
-                // 20 iterat
-                *valuePointer = 0xffffffff;
-                valuePointer++;
-                *valuePointer = 0xffffffff;
-                valuePointer++;
-            }
-        }
-        if (ground_lines > 0) {
-            if (ground_lines > 200) {
-                ground_lines = 200;
-            }
-            for (index = 0; index < 20 * ground_lines; index++) {
-                *valuePointer = 0xffffffff;
-                valuePointer++;
-                *valuePointer = 0xffffffff;
-                valuePointer++;
-            }
-        }*/
 
-        valuePointer = logBase;
-        for (index = 0; index < 40 * 200; index++) {
-            *valuePointer = 0xffffffff;
-            valuePointer++;
-        }
+        memset(logBase,0xff,32000);
 
         for (int index = 0; index < entity->visible_entities_length; index++) {
             vis_entity = &world.entities[entity->visible_entities[index]];
@@ -251,7 +217,6 @@ void main_supervisor() {
         );
 
         screen_buffers_frame_complete();
-        //framebuffer_flip();
     }
 }
 
